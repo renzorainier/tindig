@@ -1,5 +1,6 @@
 "use client";
 
+import styles from '../styles/global.css';
 import React from 'react';
 import { useAuth } from '../contexts/authContext';
 import { useRouter } from "next/navigation";
@@ -23,17 +24,14 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="bg-blue-600 p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-white font-bold text-lg">Dashboard</h1>
+      {/* Navbar - Fixed the styling here */}
+      <nav className="w-full p-4 shadow-md bg-white">
+        <div className="flex justify-between items-center"> {/* Removed shadow-md */}
+          <h1 className="text-black font-bold text-lg">Tindig</h1>
           <div className="flex items-center">
-            <span className="text-white mr-4">
-              {currentUser?.email || "User"}
-            </span>
             <button
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="text-red px-4 py-2 rounded"
             >
               Logout
             </button>
@@ -41,7 +39,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Content (rest of your code is unchanged) */}
       <div className="flex justify-center items-center h-[80vh]">
         <button
           onClick={handleStartDetection}

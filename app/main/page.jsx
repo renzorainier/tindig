@@ -10,6 +10,7 @@ const CALIBRATION_FRAMES = 30;
 // Lower value = more smoothing (slower response)
 const SMOOTHING_ALPHA = 0.5; // A value between 0.3 and 0.8 is usually good for a responsive but stable feel.
 
+
 /* -------------------- NEW: Temporal Smoothing Utility -------------------- */
 
 /**
