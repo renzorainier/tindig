@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import LandingPage from "./landing/page";
 
 // import PoseEstimator from './PoseEstimator';
 // import DepthEstimator from './DepthEstimator';

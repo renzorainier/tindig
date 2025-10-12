@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useRouter } from "next/navigation";
+import ProgressChart from "../components/ProgressChart";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -169,6 +170,17 @@ export default function Dashboard() {
         </div>
 
         {/* Additional rows/cards - example mini-cards */}
+
+        <div className="mt-6 max-w-4xl mx-auto w-full">
+          <div className="bg-[var(--surface)] rounded-xl p-4 border border-[rgba(var(--foreground-rgb),0.06)]">
+            <h3 className="text-sm text-[var(--foreground)] font-semibold mb-3">Weekly Progress</h3>
+            <ProgressChart
+              labels={["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]}
+              points={[60, 63, 68, 72, 70, 75, 80]}
+            />
+          </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <StatCard
             title="Focus Minutes"
