@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 // Assuming these dependencies are available in the execution environment
 import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+import { useAuth } from "../contexts/authContext";
+import { useRouter } from "next/navigation";
 
 const VIDEO_WIDTH = 640;
 const VIDEO_HEIGHT = 480;
@@ -122,6 +124,15 @@ function stddev(values, mu = null) {
 export default function PoseCamera() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    const { currentUser, logout } = useAuth();
+    const router = useRouter();
+
+    // Redirect if not logged in
+    useEffect(() => {
+        if (!currentUser) {
+            router.push("/login");
+        }
+    }, [currentUser, router]);
 
     // Use the new EMA hook for smoothed landmark data
     const [smoothedLandmarks, updateSmoothedLandmarks] = useEMA(null);
