@@ -8,11 +8,11 @@ import { useRouter } from "next/navigation";
 
 import { db } from '../firebase/config';
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import ProgressChart from "../components/ProgressChart";
 
 export default function Dashboard() {
   const router = useRouter();
   const { currentUser, logout } = useAuth();
+
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -23,12 +23,10 @@ export default function Dashboard() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [indexWarning, setIndexWarning] = useState(null);
 
-  // Add state for providing a copyable index spec and small UI controls
   const [indexSpec, setIndexSpec] = useState(null);
   const [showIndexConfig, setShowIndexConfig] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // track window width so the chart can adapt for mobile
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   const isGoodSession = (meanMetrics) => {
@@ -356,6 +354,17 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  const copyIndexSpec = async () => {
+    if (!indexSpec) return;
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(indexSpec, null, 2));
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.warn("Clipboard write failed", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-[var(--foreground)]">

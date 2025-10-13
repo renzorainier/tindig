@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
 // Assuming these dependencies are available in the execution environment
 import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { useAuth } from "../contexts/authContext";
@@ -359,6 +360,31 @@ export default function PoseCamera() {
             if (!calibratingRef.current && metrics) {
                 // Store real-time metrics for display (which are now derived from smoothed landmarks)
                 setRealtimeMetrics(metrics);
+
+                // If recording, capture a sample: include timestamp, metrics, and a small subset of landmarks for plotting
+                if (recordingRef.current) {
+                    try {
+                        // Choose a compact representation of landmarks: only head, shoulders, eyes (x,y normalized)
+                        const indices = [0, 11, 12, 2, 5];
+                        const lmSubset = indices.map((i) => {
+                            const lm = finalLandmarks[i];
+                            if (!lm) return null;
+                            return { x: lm.x, y: lm.y, z: lm.z ?? 0 };
+                        });
+
+                        recordingSamplesRef.current.push({
+                            t: Date.now(), // absolute timestamp; client time is fine for now
+                            metrics: {
+                                shoulderDiffPx: metrics.shoulderDiffPx,
+                                headOffsetX: metrics.headOffsetX,
+                                interEyeDistancePx: metrics.interEyeDistancePx,
+                            },
+                            landmarks: lmSubset,
+                        });
+                    } catch (e) {
+                        console.warn("Recording sample failed:", e);
+                    }
+                }
 
                 // If recording, capture a sample: include timestamp, metrics, and a small subset of landmarks for plotting
                 if (recordingRef.current) {
