@@ -1,10 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Force app to light mode only */
+html {
+  color-scheme: light; /* instructs UA to render form controls, scrollbars, etc. in light scheme */
 }
 
+/* Theme variables — updated to requested colors */
+:root {
+  --background: #e6f4ff;        /* requested background color */
+  --surface: #ffffff;           /* card / panel background */
+  --foreground: #2b2b2b;        /* softer gray to reduce contrast */
+  --foreground-rgb: 43, 43, 43; /* for rgba opacity helpers */
+
+  --red: #ff002b;
+  --button: #388efe; 
+  --graph: #d8245c;             
+}
+
+/* Tailwind / theme helpers (kept for Geist font vars) */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,15 +26,140 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base page */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ensure existing helper classes use the theme variable */
+.text-black {
+    color: var(--foreground);
+    font-size: 20px;
+}
+.text-red {
+    color:red;
+}
+.text-smallest {
+    font-size: 0.75rem;
+}
+
+.tindig {
+    color: var(--foreground-rgb);
+    font-size: 2rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.1rem;
+}
+
+/* Muted paragraph style — use foreground with lower opacity */
+.paragraph {
+    color: rgba(var(--foreground-rgb), 0.6);
+    font-size: 10px;
+    text-align: justify;
+    font-family: 'Roboto Mono', monospace;
+}
+
+/* Links */
+.terms,
+.privacy {
+    color: #0386D0;
+    cursor: default;
+}
+
+/* Google button styles */
+.google-signin-btn-container {
+    margin-top: 2rem;
+}
+.google-signin-btn {
+    width: 100%;
+    border: 2px solid #d1d5db;
+    background-color: var(--surface);
+    color: rgba(var(--foreground-rgb), 0.85);
+    padding: 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+.google-signin-btn:hover {
+    background-color: rgba(var(--foreground-rgb), 0.03);
+}
+.google-signin-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+/* === Overrides for common Tailwind utilities used in the app ===
+   Map the gray text/bg utilities to your theme variables so existing
+   component classes don't need changing. Using !important ensures the
+   overrides win over Tailwind utilities loaded earlier. */
+
+/* Text gray utilities -> themed foreground with sensible opacity */
+.text-gray-600 { color: rgba(var(--foreground-rgb), 0.92) !important; }
+.text-gray-500 { color: rgba(var(--foreground-rgb), 0.8) !important; }
+.text-gray-400 { color: rgba(var(--foreground-rgb), 0.66) !important; }
+.text-gray-300 { color: rgba(var(--foreground-rgb), 0.5) !important; }
+
+/* Background utilities -> themed backgrounds / surfaces */
+.bg-gray-100 { background-color: var(--background) !important; }
+.bg-gray-200 { background-color: rgba(var(--foreground-rgb), 0.03) !important; }
+.bg-white { background-color: var(--surface) !important; }
+
+/* Small helpers that may be used in layout */
+.border-gray-200 { border-color: rgba(var(--foreground-rgb), 0.08) !important; }
+.text-white { color: #ffffff !important; }
+
+/* If you want to tone down some labels but still inherit theme */
+.muted { color: rgba(var(--foreground-rgb), 0.6) !important; }
+
+/* ===== Button / arbitrary bg overrides for the app =====
+   Ensure any uses of bg-[#388efe] or other inline classes get the correct color. */
+
+/* Target Tailwind arbitrary class if used in markup */
+[class*="bg-[#388efe]"] {
+  background-color: var(--button) !important;
+  color: #fff !important;
+}
+
+/* A simple utility class for primary buttons */
+.btn-primary {
+  background-color: var(--button);
+  color: #fff;
+  border: none;
+}
+
+/* Logout button styling */
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--red);
+  border: 2px solid rgba(var(--foreground-rgb), 0.12);
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 80ms ease, border-color 150ms ease;
+  user-select: none;
+}
+
+/* ===== Graph / progress color helpers ===== */
+.graph-fill {
+  background-color: var(--graph) !important;
+}
+
+.graph-stroke {
+  stroke: var(--graph) !important;
+}
+
+/* Override any inline SVG circles that used the hex directly */
+circle[stroke="#d8245c"] {
+  stroke: var(--graph) !important;
 }

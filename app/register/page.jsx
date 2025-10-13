@@ -11,7 +11,6 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "../contexts/authContext";
-import styles from "../styles/global.css";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
