@@ -193,47 +193,24 @@ export default function Dashboard() {
       }],
     };
 
-    // For this dataset: render first two series as grouped bars (shoulder/head)
-    // and the inter-eye distance as a line to show trend.
-    // Configure bar sizing responsive to window width.
-    const isNarrow = windowWidth < 480;
-    const barThickness = isNarrow ? 12 : windowWidth < 768 ? 18 : 24;
-    const maxBarThickness = Math.round(barThickness * 1.4);
-
-    // Ensure datasets have explicit types so Chart.js builds a mixed chart
-    const mixedData = {
+    // Make every dataset a line (no bars)
+    const lineData = {
       labels: data.labels,
-      datasets: (data.datasets || []).map((ds, idx) => {
-        if (idx === 2) {
-          // third dataset = inter-eye distance -> line
-          return {
-            ...ds,
-            type: 'line',
-            borderWidth: 2,
-            pointRadius: Math.max(1, pointRadius),
-            pointHoverRadius: Math.min(6, pointRadius + 2),
-            tension: 0.25,
-            order: 3,
-          };
-        }
-        // first two datasets -> bars
-        return {
-          ...ds,
-          type: 'bar',
-          borderRadius: 4,
-          borderSkipped: false,
-          barThickness,
-          maxBarThickness,
-          categoryPercentage: 0.7,
-          barPercentage: 0.95,
-          order: 2,
-        };
-      }),
+      datasets: (data.datasets || []).map((ds, idx) => ({
+        ...ds,
+        type: 'line',
+        borderWidth: 2,
+        pointRadius: Math.max(1, pointRadius),
+        pointHoverRadius: Math.min(6, pointRadius + 2),
+        tension: 0.25,
+        fill: ds.fill ?? true,
+        order: 2 + idx,
+      })),
     };
 
     const cfg = {
-      type: 'bar', // base type (individual datasets may override)
-      data: mixedData,
+      type: 'line',
+      data: lineData,
       options: {
         responsive: true,
         maintainAspectRatio: true,
