@@ -8,6 +8,9 @@
   --bg-page: #f3f4f6;
   --card-bg: #ffffff;
   --border: #e5e7eb;
+  --accent-gradient: linear-gradient(90deg, #6366F1 0%, #34D399 100%);
+  --button: linear-gradient(90deg, #10b981, #06b6d4);
+  --muted-2: #9CA3AF;
 }
 
 /* Global defaults */
@@ -41,15 +44,24 @@ html, body, #__next {
 /* Muted small text if needed */
 .paragraph { color: var(--muted); font-size: 0.875rem; font-family: 'Roboto Mono', monospace; }
 
-/* Card styling */
-.card {
-  background: var(--card-bg);
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 6px rgba(2,6,23,0.04);
-  border: 1px solid var(--border);
+/* New: dashboard-specific visual enhancements */
+section.hero, .hero {
+  border-radius: 0.75rem;
+  padding: 1rem;
 }
 
-/* Buttons */
+/* Card refinements */
+.card {
+  background: var(--card-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+/* Circle score improvements (used in dashboard) */
+.circle-score { display: inline-flex; align-items: center; justify-content: center; }
+
+/* Buttons general */
 .btn-primary {
   background-color: var(--primary);
   color: #ffffff;
@@ -62,7 +74,32 @@ html, body, #__next {
 }
 .btn-primary:hover { filter: brightness(0.95); transform: translateY(-2px); }
 
-/* Chart area: ensure the canvas has room on mobile and desktop */
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Small badges */
+.badge-good {
+  background: rgba(34,197,94,0.12);
+  color: #059669;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+.badge-warning {
+  background: rgba(245,158,11,0.12);
+  color: #D97706;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+/* Chart area overrides */
 .chart-area {
   position: relative;
   width: 100%;
@@ -70,26 +107,28 @@ html, body, #__next {
   height: 100%;
   padding: 0.25rem;
   box-sizing: border-box;
-  background: var(--card-bg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.95));
   border-radius: 0.5rem;
-  overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(15,23,42,0.04);
 }
 
-/* Ensure canvas in chart area fills container */
-.chart-area .chart-canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
+/* Make the chart canvas take the container space */
+.chart-area .chart-canvas { width:100% !important; height:100% !important; display:block; }
 
 /* Increase min-height on narrow screens so the graph isn't compact */
 @media (max-width: 640px) {
   .chart-area { min-height: 420px; }
 }
 
-/* Nav tweaks */
-.app-nav { background: var(--card-bg); border-bottom: 1px solid rgba(0,0,0,0.03); }
+/* Responsive tweaks for dashboard */
+@media (max-width: 768px) {
+  .card { padding: 1rem; }
+  .chart-area { min-height: 320px; }
+}
+
+/* Minor typography polish for tables/lists */
+.card h4, .card h3 { color: #111827; }
+.card .text-sm { color: #374151; }
 
 /* small helpers */
 .center { display:flex; align-items:center; justify-content:center; }

@@ -367,115 +367,133 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-[var(--foreground)]">
-      {/* Navbar - Fixed the styling here */}
-      <nav className="w-full p-4 shadow-md bg-white">
-        <div className="flex justify-between items-center">
-          {" "}
-          {/* Removed shadow-md */}
-          <h1 className="font-bold text-lg text-[var(--foreground)]">Tindig</h1>
-          <div className="flex items-center">
-            <button
-              onClick={handleLogout}
-              className="btn-logout px-4 py-2"
-            >
-              Logout
-            </button>
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 text-[var(--foreground)]">
+      {/* Top nav */}
+      <nav className="w-full p-4 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="tindig text-lg">Tindig</h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-gray-500 mr-3 hidden sm:block">Signed in as <strong className="text-gray-800">{currentUser?.email || 'User'}</strong></div>
+            <button onClick={handleLogout} className="btn-primary px-4 py-2 rounded-md text-sm">Logout</button>
           </div>
         </div>
       </nav>
 
-        
-      <div className="p-8">
-        <h2 className="text-2xl font-semibold mb-6">Dashboard for {currentUser?.email || 'User'}</h2>
+      <main className="max-w-6xl mx-auto p-6">
+        {/* Hero */}
+        <section className="rounded-xl p-6 mb-6 bg-indigo-600 text-white shadow-lg overflow-hidden">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Welcome back{currentUser?.email ? `, ${currentUser.email.split('@')[0]}` : ''} 👋</h2>
+              <p className="mt-1 text-sm opacity-90">Track posture trends, review sessions, and start the camera to analyze posture in real time.</p>
+            </div>
+            <div className="hidden md:flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-xs opacity-80">Total</div>
+                <div className="text-2xl font-bold">{totals.total}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs opacity-80">Good</div>
+                <div className="text-2xl font-bold">{totals.good}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs opacity-80">Needs Work</div>
+                <div className="text-2xl font-bold text-yellow-200">{totals.bad}</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-3">
+            <button onClick={handleStartDetection} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-semibold transition">Start Camera</button>
+            <button onClick={() => setShowIndexConfig(true)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg">Index Help</button>
+          </div>
+        </section>
 
-        
+        {/* Alerts */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded bg-red-50 border border-red-100 text-red-700 text-sm">
+          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm">
             Error fetching sessions: {errorMsg}
           </div>
         )}
-
-        
         {indexWarning && (
-          <div className="mb-4 p-3 rounded bg-yellow-50 border border-yellow-100 text-yellow-800 text-sm">
-            <div>{indexWarning}</div>
-            <div className="mt-2 text-xs text-yellow-700">Where: Firebase Console → Firestore → Indexes → Add Index</div>
-            {indexSpec && (
-              <div className="mt-3">
-                <button
-                  onClick={() => setShowIndexConfig((s) => !s)}
-                  className="text-sm px-2 py-1 bg-yellow-100 border border-yellow-200 rounded mr-2"
-                >
-                  {showIndexConfig ? "Hide index config" : "Show index config"}
-                </button>
-                <button
-                  onClick={copyIndexSpec}
-                  className="text-sm px-2 py-1 bg-yellow-100 border border-yellow-200 rounded"
-                >
-                  Copy JSON
-                </button>
-                {copySuccess && <span className="ml-2 text-xs text-green-700">Copied</span>}
-                {showIndexConfig && (
-                  <pre className="mt-3 overflow-auto text-xs bg-white p-3 border rounded text-gray-800">
-                    {JSON.stringify(
-                      {
-                        indexes: [
-                          {
-                            collectionId: indexSpec.collectionId,
-                            fields: indexSpec.fields,
-                            queryScope: indexSpec.queryScope,
-                          },
-                        ],
-                      },
-                      null,
-                      2
-                    )}
-                  </pre>
-                )}
+          <div className="mb-4 p-3 rounded-lg bg-yellow-50 border border-yellow-100 text-yellow-800 text-sm">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="font-semibold">Index Warning</div>
+                <div className="mt-1 text-xs">Server-side ordering requires a Firestore composite index. Results may be unordered.</div>
               </div>
+              <div className="text-right">
+                <button onClick={() => setShowIndexConfig((s) => !s)} className="text-sm underline">Show</button>
+              </div>
+            </div>
+            {showIndexConfig && indexSpec && (
+              <pre className="mt-3 overflow-auto text-xs bg-white p-3 border rounded text-gray-800">
+                {JSON.stringify({ indexes: [{ collectionId: indexSpec.collectionId, fields: indexSpec.fields, queryScope: indexSpec.queryScope }] }, null, 2)}
+              </pre>
             )}
           </div>
-         )}
+        )}
 
-        
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            <h4 className="text-sm text-gray-500">Total Sessions</h4>
-            <p className="text-3xl font-bold mt-2">{totals.total}</p>
-            <p className="text-xs text-gray-400 mt-1">All recorded posture sessions</p>
+        {/* Stats + Chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="card p-5">
+            <h3 className="text-sm text-gray-500">Total Sessions</h3>
+            <div className="flex items-center justify-between mt-3">
+              <div>
+                <p className="text-3xl font-bold">{totals.total}</p>
+                <p className="text-xs text-gray-500 mt-1">All recorded posture sessions</p>
+              </div>
+              <CircleScore score={totals.total === 0 ? 0 : Math.round((totals.good / Math.max(1, totals.total)) * 100)} />
+            </div>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            <h4 className="text-sm text-gray-500">Good Posture</h4>
-            <p className="text-3xl font-bold mt-2">{totals.good}</p>
-            <p className="text-xs text-gray-400 mt-1">{totals.good}/{totals.total} sessions are good</p>
+          <div className="card p-5">
+            <h3 className="text-sm text-gray-500">Good Sessions</h3>
+            <p className="text-3xl font-bold mt-3 text-green-600">{totals.good}</p>
+            <p className="text-xs text-gray-500 mt-2">{totals.good}/{totals.total} sessions</p>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            <h4 className="text-sm text-gray-500">Bad Posture</h4>
-            <p className="text-3xl font-bold mt-2 text-red-600">{totals.bad}</p>
-            <p className="text-xs text-gray-400 mt-1">{totals.bad}/{totals.total} sessions are bad</p>
-          </div>
-        </div>
-
-        
-        <div className="bg-white p-6 rounded-lg shadow-xl mb-8">
-          <div className="relative h-80 sm:h-96"> {/* taller on mobile for improved readability */}
-            <canvas ref={chartRef} className="w-full h-full"></canvas>
+          <div className="card p-5">
+            <h3 className="text-sm text-gray-500">Needs Improvement</h3>
+            <p className="text-3xl font-bold mt-3 text-yellow-600">{totals.bad}</p>
+            <p className="text-xs text-gray-500 mt-2">{totals.bad}/{totals.total} sessions</p>
           </div>
         </div>
 
-        
-        <div className="flex justify-center items-center">
-          <button
-            onClick={handleStartDetection}
-            className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg shadow-xl text-xl font-bold transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            Start Posture Detection Camera
-          </button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card p-4 chart-area">
+            <h4 className="text-sm font-semibold mb-3">Posture Trends</h4>
+            <div className="relative h-72">
+              <canvas ref={chartRef} className="chart-canvas"></canvas>
+            </div>
+          </div>
+
+          {/* Recent Sessions list */}
+          <div className="card p-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold">Recent Sessions</h4>
+              <div className="text-xs text-gray-400">{sessions.length} entries</div>
+            </div>
+            <div className="mt-3 divide-y">
+              {sessions.length === 0 && <div className="p-4 text-sm text-gray-500">No sessions recorded yet.</div>}
+              {sessions.slice(-8).reverse().map((s) => (
+                <div key={s.id} className="p-3 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium">{s.dateStr}</div>
+                    <div className="text-xs text-gray-500 mt-1">Shoulder {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)} px • Head {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px</div>
+                  </div>
+                  <div className="text-right">
+                    {isGoodSession(s.meanMetrics) ? (
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">Good</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">Needs Work</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
