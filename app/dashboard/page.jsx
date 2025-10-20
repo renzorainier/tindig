@@ -438,46 +438,60 @@ export default function Dashboard() {
                 {currentUser?.email || "User"}
               </strong>
             </div>
+            {/* Theme toggle button with additional accessibility features */}
             <button
               onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="btn-logout"
+              role="switch"
+              aria-checked={theme === "dark"}
+              aria-label={`Toggle theme, currently ${theme}`}
+              title={`Theme: ${theme}`}
+              className="inline-flex items-center gap-3 p-1 rounded-lg border border-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
             >
-              {theme === "dark" ? "Light" : "Dark"}
-              <span className="inline-flex items-center gap-2">
-                {theme === "dark" ? (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden
-                  >
-                    <path
-                      d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden
-                  >
-                    <path
-                      d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12" cy="12" r="3" fill="currentColor" />
-                  </svg>
-                )}
+              {/* sliding label (shows Light Mode / Dark Mode) */}
+              <span className="inline-flex overflow-hidden w-16 h-6">
+                <span
+                  className="inline-flex"
+                  style={{
+                    transform:
+                      theme === "dark" ? "translateX(-50%)" : "translateX(0)",
+                    transition: "transform 220ms ease",
+                  }}
+                >
+                  <span className="w-16 text-sm select-none inline-flex flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4 text-gray-500"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="12" cy="12" r="3" fill="currentColor" />
+                    </svg>
+                    <span>Light</span>
+                  </span>
+                  <span className="w-16 text-sm select-none inline-flex flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4 text-yellow-200"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <span>Dark</span>
+                  </span>
+                </span>
               </span>
             </button>
             <button
@@ -535,19 +549,7 @@ export default function Dashboard() {
               onClick={() => router.push("/help")}
               className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto"
             >
-              <span className="inline-flex items-center gap-2">
-                {theme === 'dark' ? (
-                  <svg className="w-4 h-4 text-yellow-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="12" cy="12" r="3" fill="currentColor" />
-                  </svg>
-                )}
-                <span>Help</span>
-              </span>
+              Help
             </button>
           </div>
         </section>
