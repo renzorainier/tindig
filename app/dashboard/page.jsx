@@ -29,6 +29,32 @@ export default function Dashboard() {
 
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
+  // Theme (light / dark)
+  const [theme, setTheme] = useState('light');
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = localStorage.getItem('theme');
+    const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(initial);
+    // apply to document
+    document.documentElement.setAttribute('data-theme', initial);
+    document.documentElement.style.colorScheme = initial === 'dark' ? 'dark' : 'light';
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch (e) {
+      /* ignore storage errors */
+    }
+    document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.style.colorScheme = next === 'dark' ? 'dark' : 'light';
+  };
+
   const isGoodSession = (meanMetrics) => {
     if (!meanMetrics) return false;
     const sh = Number(meanMetrics.shoulderDiffPx ?? 9999);
@@ -344,23 +370,29 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 text-[var(--foreground)]">
+    <div
+      className="min-h-screen text-[var(--foreground)] flex flex-col items-center"
+      style={{ background: 'linear-gradient(180deg, var(--background) 0%, var(--background-gradient-end) 100%)' }}
+    >
       {/* Top nav */}
-      <nav className="w-full p-4 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+      <nav className="w-full p-4 nav-surface nav-border shadow-md backdrop-blur-sm sticky top-0 z-30 rounded-b-2xl">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="tindig text-lg">Tindig</h1>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-500 mr-3 hidden sm:block">Signed in as <strong className="text-gray-800">{currentUser?.email || 'User'}</strong></div>
+            <div className="text-sm mr-3 hidden sm:block nav-text">Signed in as <strong className="nav-strong">{currentUser?.email || 'User'}</strong></div>
+            <button onClick={toggleTheme} aria-label="Toggle theme" className="btn-logout">
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </button>
             <button onClick={handleLogout} className="btn-primary px-4 py-2 rounded-md text-sm">Logout</button>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto p-6">
+      <main className="max-w-md sm:max-w-3xl w-full mx-4 sm:mx-auto p-4 sm:p-6 mt-4">
         {/* Hero */}
-        <section className="rounded-xl p-6 mb-6 bg-indigo-600 text-white shadow-lg overflow-hidden">
+        <section className="rounded-2xl p-4 sm:p-6 mb-6 bg-indigo-600 text-white shadow-lg overflow-hidden">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold">Welcome back{currentUser?.email ? `, ${currentUser.email.split('@')[0]}` : ''} 👋</h2>
@@ -381,9 +413,9 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="mt-4 flex gap-3">
-            <button onClick={handleStartDetection} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-semibold transition">Start Camera</button>
-            <button onClick={() => setShowIndexConfig(true)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg">Index Help</button>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <button onClick={handleStartDetection} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl font-semibold transition w-full sm:w-auto">Start Camera</button>
+            <button onClick={() => setShowIndexConfig(true)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto">Index Help</button>
           </div>
         </section>
 
@@ -413,8 +445,8 @@ export default function Dashboard() {
         )}
 
         {/* Stats + Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <div className="card p-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h3 className="text-sm text-gray-500">Total Sessions</h3>
             <div className="flex items-center justify-between mt-3">
               <div>
@@ -424,53 +456,53 @@ export default function Dashboard() {
               <CircleScore score={totals.total === 0 ? 0 : Math.round((totals.good / Math.max(1, totals.total)) * 100)} />
             </div>
           </div>
-          <div className="card p-5">
+          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h3 className="text-sm text-gray-500">Good Sessions</h3>
             <p className="text-3xl font-bold mt-3 text-green-600">{totals.good}</p>
             <p className="text-xs text-gray-500 mt-2">{totals.good}/{totals.total} sessions</p>
           </div>
-          <div className="card p-5">
+          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h3 className="text-sm text-gray-500">Needs Improvement</h3>
             <p className="text-3xl font-bold mt-3 text-yellow-600">{totals.bad}</p>
             <p className="text-xs text-gray-500 mt-2">{totals.bad}/{totals.total} sessions</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="card p-4 chart-area">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="card p-3 chart-area shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h4 className="text-sm font-semibold mb-3">Posture Trends</h4>
             <div className="relative h-72">
               <canvas ref={chartRef} className="chart-canvas"></canvas>
             </div>
           </div>
 
-          {/* Recent Sessions list */}
-          <div className="card p-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold">Recent Sessions</h4>
-              <div className="text-xs text-gray-400">{sessions.length} entries</div>
-            </div>
-            <div className="mt-3 divide-y">
-              {sessions.length === 0 && <div className="p-4 text-sm text-gray-500">No sessions recorded yet.</div>}
-              {sessions.slice(-8).reverse().map((s) => (
-                <div key={s.id} className="p-3 flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-medium">{s.dateStr}</div>
-                    <div className="text-xs text-gray-500 mt-1">Shoulder {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)} px • Head {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px</div>
-                  </div>
-                  <div className="text-right">
-                    {isGoodSession(s.meanMetrics) ? (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">Good</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">Needs Work</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+           {/* Recent Sessions list */}
+          <div className="card p-3 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
+             <div className="flex items-center justify-between">
+               <h4 className="text-sm font-semibold">Recent Sessions</h4>
+               <div className="text-xs text-gray-400">{sessions.length} entries</div>
+             </div>
+             <div className="mt-3 divide-y">
+               {sessions.length === 0 && <div className="p-4 text-sm text-gray-500">No sessions recorded yet.</div>}
+               {sessions.slice(-8).reverse().map((s) => (
+                <div key={s.id} className="p-3 flex items-center justify-between rounded-lg">
+                   <div>
+                     <div className="text-sm font-medium">{s.dateStr}</div>
+                     <div className="text-xs text-gray-500 mt-1">Shoulder {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)} px • Head {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px</div>
+                   </div>
+                   <div className="text-right">
+                     {isGoodSession(s.meanMetrics) ? (
+                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">Good</span>
+                     ) : (
+                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">Needs Work</span>
+                     )}
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </div>
+         </div>
+       </main>
+     </div>
+   );
+ }

@@ -742,7 +742,10 @@ export default function PoseCamera() {
     };
 
     return (
-    <div className="flex flex-col items-center justify-center p-4 min-h-screen bg-gray-50 text-gray-800 font-sans">
+    <div
+      className="flex flex-col items-center justify-center p-4 min-h-screen font-sans"
+      style={{ background: "var(--background)", color: "var(--foreground)" }}
+    >
 
         {/* Header */}
         <header className="mb-8 max-w-lg w-full">
