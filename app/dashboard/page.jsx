@@ -1,12 +1,12 @@
 // Dashboard page
 "use client";
 
-import Chart from 'chart.js/auto';
+import Chart from "chart.js/auto";
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useRouter } from "next/navigation";
 
-import { db } from '../firebase/config';
+import { db } from "../firebase/config";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 export default function Dashboard() {
@@ -27,32 +27,41 @@ export default function Dashboard() {
   const [showIndexConfig, setShowIndexConfig] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
 
   // Theme (light / dark)
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const saved = localStorage.getItem('theme');
-    const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("theme");
+    const initial =
+      saved ||
+      (window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
     setTheme(initial);
     // apply to document
-    document.documentElement.setAttribute('data-theme', initial);
-    document.documentElement.style.colorScheme = initial === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute("data-theme", initial);
+    document.documentElement.style.colorScheme =
+      initial === "dark" ? "dark" : "light";
   }, []);
 
   const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
+    const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     try {
-      localStorage.setItem('theme', next);
+      localStorage.setItem("theme", next);
     } catch (e) {
       /* ignore storage errors */
     }
-    document.documentElement.setAttribute('data-theme', next);
-    document.documentElement.style.colorScheme = next === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute("data-theme", next);
+    document.documentElement.style.colorScheme =
+      next === "dark" ? "dark" : "light";
   };
 
   const isGoodSession = (meanMetrics) => {
@@ -76,7 +85,11 @@ export default function Dashboard() {
 
         console.debug("Fetching sessions for uid:", currentUser.uid);
         const colRef = collection(db, "posture_recordings");
-        const orderedQuery = query(colRef, where("userId", "==", currentUser.uid), orderBy("clientCreatedAt", "asc"));
+        const orderedQuery = query(
+          colRef,
+          where("userId", "==", currentUser.uid),
+          orderBy("clientCreatedAt", "asc")
+        );
 
         let snap;
         let usedFallback = false; // track whether we used the unordered fallback
@@ -87,26 +100,32 @@ export default function Dashboard() {
           console.warn("Initial query failed:", msg);
           if (msg.toLowerCase().includes("index")) {
             usedFallback = true;
-             // Build a small index spec the user can copy into Firebase Console or firestore.indexes.json
-             const spec = {
-               collectionId: "posture_recordings",
-               queryScope: "COLLECTION",
-               fields: [
-                 { fieldPath: "userId", order: "ASCENDING" },
-                 { fieldPath: "clientCreatedAt", order: "ASCENDING" }
-               ]
-             };
-             setIndexSpec(spec);
-             setIndexWarning(
-               "Server-side ordering requires a Firestore composite index. Results are shown unordered. Create the index in Firebase Console (Firestore → Indexes → Add Index) or paste the sample below."
-             );
-             console.debug("Falling back to unordered query (no orderBy) for uid:", currentUser.uid);
-             try {
-               const fallbackQuery = query(colRef, where("userId", "==", currentUser.uid));
-               snap = await getDocs(fallbackQuery);
-             } catch (fallbackErr) {
-               throw fallbackErr;
-             }
+            // Build a small index spec the user can copy into Firebase Console or firestore.indexes.json
+            const spec = {
+              collectionId: "posture_recordings",
+              queryScope: "COLLECTION",
+              fields: [
+                { fieldPath: "userId", order: "ASCENDING" },
+                { fieldPath: "clientCreatedAt", order: "ASCENDING" },
+              ],
+            };
+            setIndexSpec(spec);
+            setIndexWarning(
+              "Server-side ordering requires a Firestore composite index. Results are shown unordered. Create the index in Firebase Console (Firestore → Indexes → Add Index) or paste the sample below."
+            );
+            console.debug(
+              "Falling back to unordered query (no orderBy) for uid:",
+              currentUser.uid
+            );
+            try {
+              const fallbackQuery = query(
+                colRef,
+                where("userId", "==", currentUser.uid)
+              );
+              snap = await getDocs(fallbackQuery);
+            } catch (fallbackErr) {
+              throw fallbackErr;
+            }
           } else {
             throw qErr;
           }
@@ -127,10 +146,18 @@ export default function Dashboard() {
         let docs = snap.docs.map((d) => {
           const data = d.data();
           // numeric timestamp for sorting (fallback to createdAt or now)
-          const t = Number(data.clientCreatedAt ?? (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : Date.now()));
+          const t = Number(
+            data.clientCreatedAt ??
+              (data.createdAt?.seconds
+                ? data.createdAt.seconds * 1000
+                : Date.now())
+          );
           // prefer a stored YYYY-MM-DD string if available; otherwise derive a date-only string
-          const dateStr = data.clientCreatedAtDate
-            || (Number.isFinite(t) ? new Date(Number(t)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+          const dateStr =
+            data.clientCreatedAtDate ||
+            (Number.isFinite(t)
+              ? new Date(Number(t)).toISOString().split("T")[0]
+              : new Date().toISOString().split("T")[0]);
           return {
             id: d.id,
             t,
@@ -145,15 +172,24 @@ export default function Dashboard() {
         let good = 0;
         let bad = 0;
         docs.forEach((s) => {
-          if (isGoodSession(s.meanMetrics)) good++; else bad++;
+          if (isGoodSession(s.meanMetrics)) good++;
+          else bad++;
         });
 
         // Use the saved YYYY-MM-DD date string when present (no time), otherwise fallback to a date-only string
-        const labels = docs.map((s) => s.dateStr || (new Date(Number(s.t)).toLocaleDateString()));
+        const labels = docs.map(
+          (s) => s.dateStr || new Date(Number(s.t)).toLocaleDateString()
+        );
 
-        const shoulderData = docs.map((s) => Number(s.meanMetrics?.shoulderDiffPx ?? 0));
-        const headOffsetData = docs.map((s) => Number(s.meanMetrics?.headOffsetX ?? 0));
-        const eyeDistData = docs.map((s) => Number(s.meanMetrics?.interEyeDistancePx ?? 0));
+        const shoulderData = docs.map((s) =>
+          Number(s.meanMetrics?.shoulderDiffPx ?? 0)
+        );
+        const headOffsetData = docs.map((s) =>
+          Number(s.meanMetrics?.headOffsetX ?? 0)
+        );
+        const eyeDistData = docs.map((s) =>
+          Number(s.meanMetrics?.interEyeDistancePx ?? 0)
+        );
 
         setSessions(docs);
         setTotals({ total: docs.length, good, bad });
@@ -188,7 +224,10 @@ export default function Dashboard() {
         });
       } catch (err) {
         console.error("Failed to fetch sessions:", err);
-        setErrorMsg(err && (err.message || String(err)) || "Unknown error fetching sessions");
+        setErrorMsg(
+          (err && (err.message || String(err))) ||
+            "Unknown error fetching sessions"
+        );
         setSessions([]);
         setChartData(null);
         setTotals({ total: 0, good: 0, bad: 0 });
@@ -196,7 +235,9 @@ export default function Dashboard() {
     };
 
     fetchSessions();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [currentUser?.uid]);
 
   // Update chart whenever chartData or window size changes
@@ -204,7 +245,7 @@ export default function Dashboard() {
     if (!chartRef.current) return;
     if (chartInstance.current) chartInstance.current.destroy();
 
-    const ctx = chartRef.current.getContext('2d');
+    const ctx = chartRef.current.getContext("2d");
 
     // pick friendly aspect ratio and tick limits for small screens
     const aspectRatio = windowWidth < 480 ? 1.1 : windowWidth < 768 ? 1.6 : 2.5;
@@ -213,10 +254,12 @@ export default function Dashboard() {
 
     const data = chartData || {
       labels: [],
-      datasets: [{
-        label: 'Posture Sessions',
-        data: [0],
-      }],
+      datasets: [
+        {
+          label: "Posture Sessions",
+          data: [0],
+        },
+      ],
     };
 
     // Make every dataset a line (no bars)
@@ -224,7 +267,7 @@ export default function Dashboard() {
       labels: data.labels,
       datasets: (data.datasets || []).map((ds, idx) => ({
         ...ds,
-        type: 'line',
+        type: "line",
         borderWidth: 2,
         pointRadius: Math.max(1, pointRadius),
         pointHoverRadius: Math.min(6, pointRadius + 2),
@@ -235,7 +278,7 @@ export default function Dashboard() {
     };
 
     const cfg = {
-      type: 'line',
+      type: "line",
       data: lineData,
       options: {
         responsive: true,
@@ -244,15 +287,20 @@ export default function Dashboard() {
         scales: {
           y: { beginAtZero: true, ticks: { precision: 0 } },
           x: {
-            ticks: { maxRotation: 45, minRotation: 0, autoSkip: true, maxTicksLimit: maxTicks },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: maxTicks,
+            },
             stacked: false,
           },
         },
         plugins: {
-          legend: { position: 'top' },
-          tooltip: { mode: 'index', intersect: false },
+          legend: { position: "top" },
+          tooltip: { mode: "index", intersect: false },
         },
-        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        interaction: { mode: "nearest", axis: "x", intersect: false },
         elements: { line: { tension: 0.25 } },
       },
     };
@@ -271,10 +319,10 @@ export default function Dashboard() {
       clearTimeout(t);
       t = setTimeout(() => setWindowWidth(window.innerWidth), 120);
     };
-    window.addEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
     return () => {
       clearTimeout(t);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -291,7 +339,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await logout(); 
+      await logout();
       router.push("/login");
     } catch (error) {
       console.error("Logout error", error);
@@ -372,7 +420,10 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen text-[var(--foreground)] flex flex-col items-center"
-      style={{ background: 'linear-gradient(180deg, var(--background) 0%, var(--background-gradient-end) 100%)' }}
+      style={{
+        background:
+          "linear-gradient(180deg, var(--background) 0%, var(--background-gradient-end) 100%)",
+      }}
     >
       {/* Top nav */}
       <nav className="w-full p-4 nav-surface nav-border shadow-md backdrop-blur-sm sticky top-0 z-30 rounded-b-2xl">
@@ -381,11 +432,60 @@ export default function Dashboard() {
             <h1 className="tindig text-lg">Tindig</h1>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-sm mr-3 hidden sm:block nav-text">Signed in as <strong className="nav-strong">{currentUser?.email || 'User'}</strong></div>
-            <button onClick={toggleTheme} aria-label="Toggle theme" className="btn-logout">
-              {theme === 'dark' ? 'Light' : 'Dark'}
+            <div className="text-sm mr-3 hidden sm:block nav-text">
+              Signed in as{" "}
+              <strong className="nav-strong">
+                {currentUser?.email || "User"}
+              </strong>
+            </div>
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="btn-logout"
+            >
+              {theme === "dark" ? "Light" : "Dark"}
+              <span className="inline-flex items-center gap-2">
+                {theme === "dark" ? (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
+                  >
+                    <path
+                      d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
+                  >
+                    <path
+                      d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12" cy="12" r="3" fill="currentColor" />
+                  </svg>
+                )}
+              </span>
             </button>
-            <button onClick={handleLogout} className="btn-primary px-4 py-2 rounded-md text-sm">Logout</button>
+            <button
+              onClick={handleLogout}
+              className="btn-primary px-4 py-2 rounded-md text-sm"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>
@@ -395,8 +495,17 @@ export default function Dashboard() {
         <section className="rounded-2xl p-4 sm:p-6 mb-6 bg-indigo-600 text-white shadow-lg overflow-hidden">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold">Welcome back{currentUser?.email ? `, ${currentUser.email.split('@')[0]}` : ''} 👋</h2>
-              <p className="mt-1 text-sm opacity-90">Track posture trends, review sessions, and start the camera to analyze posture in real time.</p>
+              <h2 className="text-2xl font-bold">
+                Welcome back
+                {currentUser?.email
+                  ? `, ${currentUser.email.split("@")[0]}`
+                  : ""}{" "}
+                👋
+              </h2>
+              <p className="mt-1 text-sm opacity-90">
+                Track posture trends, review sessions, and start the camera to
+                analyze posture in real time.
+              </p>
             </div>
             <div className="hidden md:flex items-center gap-4">
               <div className="text-center">
@@ -409,13 +518,37 @@ export default function Dashboard() {
               </div>
               <div className="text-center">
                 <div className="text-xs opacity-80">Needs Work</div>
-                <div className="text-2xl font-bold text-yellow-200">{totals.bad}</div>
+                <div className="text-2xl font-bold text-yellow-200">
+                  {totals.bad}
+                </div>
               </div>
             </div>
           </div>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
-            <button onClick={handleStartDetection} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl font-semibold transition w-full sm:w-auto">Start Camera</button>
-            <button onClick={router.push("./help")} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto">Help</button>
+            <button
+              onClick={handleStartDetection}
+              className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl font-semibold transition w-full sm:w-auto"
+            >
+              Start Camera
+            </button>
+            <button
+              onClick={() => router.push("/help")}
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto"
+            >
+              <span className="inline-flex items-center gap-2">
+                {theme === 'dark' ? (
+                  <svg className="w-4 h-4 text-yellow-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="12" cy="12" r="3" fill="currentColor" />
+                  </svg>
+                )}
+                <span>Help</span>
+              </span>
+            </button>
           </div>
         </section>
 
@@ -430,15 +563,35 @@ export default function Dashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-semibold">Index Warning</div>
-                <div className="mt-1 text-xs">Server-side ordering requires a Firestore composite index. Results may be unordered.</div>
+                <div className="mt-1 text-xs">
+                  Server-side ordering requires a Firestore composite index.
+                  Results may be unordered.
+                </div>
               </div>
               <div className="text-right">
-                <button onClick={() => setShowIndexConfig((s) => !s)} className="text-sm underline">Show</button>
+                <button
+                  onClick={() => setShowIndexConfig((s) => !s)}
+                  className="text-sm underline"
+                >
+                  Show
+                </button>
               </div>
             </div>
             {showIndexConfig && indexSpec && (
               <pre className="mt-3 overflow-auto text-xs bg-white p-3 border rounded text-gray-800">
-                {JSON.stringify({ indexes: [{ collectionId: indexSpec.collectionId, fields: indexSpec.fields, queryScope: indexSpec.queryScope }] }, null, 2)}
+                {JSON.stringify(
+                  {
+                    indexes: [
+                      {
+                        collectionId: indexSpec.collectionId,
+                        fields: indexSpec.fields,
+                        queryScope: indexSpec.queryScope,
+                      },
+                    ],
+                  },
+                  null,
+                  2
+                )}
               </pre>
             )}
           </div>
@@ -451,20 +604,38 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mt-3">
               <div>
                 <p className="text-3xl font-bold">{totals.total}</p>
-                <p className="text-xs text-gray-500 mt-1">All recorded posture sessions</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  All recorded posture sessions
+                </p>
               </div>
-              <CircleScore score={totals.total === 0 ? 0 : Math.round((totals.good / Math.max(1, totals.total)) * 100)} />
+              <CircleScore
+                score={
+                  totals.total === 0
+                    ? 0
+                    : Math.round(
+                        (totals.good / Math.max(1, totals.total)) * 100
+                      )
+                }
+              />
             </div>
           </div>
           <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h3 className="text-sm text-gray-500">Good Sessions</h3>
-            <p className="text-3xl font-bold mt-3 text-green-600">{totals.good}</p>
-            <p className="text-xs text-gray-500 mt-2">{totals.good}/{totals.total} sessions</p>
+            <p className="text-3xl font-bold mt-3 text-green-600">
+              {totals.good}
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              {totals.good}/{totals.total} sessions
+            </p>
           </div>
           <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <h3 className="text-sm text-gray-500">Needs Improvement</h3>
-            <p className="text-3xl font-bold mt-3 text-yellow-600">{totals.bad}</p>
-            <p className="text-xs text-gray-500 mt-2">{totals.bad}/{totals.total} sessions</p>
+            <p className="text-3xl font-bold mt-3 text-yellow-600">
+              {totals.bad}
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              {totals.bad}/{totals.total} sessions
+            </p>
           </div>
         </div>
 
@@ -476,33 +647,54 @@ export default function Dashboard() {
             </div>
           </div>
 
-           {/* Recent Sessions list */}
+          {/* Recent Sessions list */}
           <div className="card p-3 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
-             <div className="flex items-center justify-between">
-               <h4 className="text-sm font-semibold">Recent Sessions</h4>
-               <div className="text-xs text-gray-400">{sessions.length} entries</div>
-             </div>
-             <div className="mt-3 divide-y">
-               {sessions.length === 0 && <div className="p-4 text-sm text-gray-500">No sessions recorded yet.</div>}
-               {sessions.slice(-8).reverse().map((s) => (
-                <div key={s.id} className="p-3 flex items-center justify-between rounded-lg">
-                   <div>
-                     <div className="text-sm font-medium">{s.dateStr}</div>
-                     <div className="text-xs text-gray-500 mt-1">Shoulder {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)} px • Head {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px</div>
-                   </div>
-                   <div className="text-right">
-                     {isGoodSession(s.meanMetrics) ? (
-                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">Good</span>
-                     ) : (
-                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">Needs Work</span>
-                     )}
-                   </div>
-                 </div>
-               ))}
-             </div>
-           </div>
-         </div>
-       </main>
-     </div>
-   );
- }
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold">Recent Sessions</h4>
+              <div className="text-xs text-gray-400">
+                {sessions.length} entries
+              </div>
+            </div>
+            <div className="mt-3 divide-y">
+              {sessions.length === 0 && (
+                <div className="p-4 text-sm text-gray-500">
+                  No sessions recorded yet.
+                </div>
+              )}
+              {sessions
+                .slice(-8)
+                .reverse()
+                .map((s) => (
+                  <div
+                    key={s.id}
+                    className="p-3 flex items-center justify-between rounded-lg"
+                  >
+                    <div>
+                      <div className="text-sm font-medium">{s.dateStr}</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Shoulder{" "}
+                        {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)}{" "}
+                        px • Head{" "}
+                        {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      {isGoodSession(s.meanMetrics) ? (
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
+                          Good
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">
+                          Needs Work
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
