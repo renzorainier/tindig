@@ -415,7 +415,7 @@ export default function Dashboard() {
           </div>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <button onClick={handleStartDetection} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl font-semibold transition w-full sm:w-auto">Start Camera</button>
-            <button onClick={() => setShowIndexConfig(true)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto">Index Help</button>
+            <button onClick={router.push("./help")} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto">Help</button>
           </div>
         </section>
 
