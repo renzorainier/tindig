@@ -15,6 +15,7 @@ html[data-theme="dark"],
   --red: #ff6b7a;
   --button: #5aa8ff;
   --graph: #ff7b9c;
+  --svg-divider-bg: #5aa8ff;
 }
 
 /* light theme vars */
@@ -26,6 +27,7 @@ html[data-theme="dark"],
   --red: #ff002b;
   --button: #388efe;
   --graph: #d8245c;
+  --svg-divider-bg: #5aa8ff;
 }
 
 /* theme helpers */
@@ -163,4 +165,13 @@ button.btn-primary, .btn-logout, .google-signin-btn { border-radius: 12px; }
 /* tweak chart size on small screens */
 @media (max-width: 480px) {
   .chart-area .chart-canvas { height: 220px !important; }
+}
+
+/* SVG divider helpers */
+.svg-divider { width: 100%; height: 15vh; display: block; }
+.svg-divider path {
+  fill: var(--svg-divider-bg) !important;
+}
+.svg-divider g {
+  fill: var(--background) !important;
 }
