@@ -19,6 +19,7 @@ export default function Login() {
     setTimeout(() => setError(""), 5000);
   };
 
+  // Function to handle Google Sign-In
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError("");
@@ -57,6 +58,7 @@ export default function Login() {
     }
   };
 
+  // Unused Function for handling Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -95,14 +97,14 @@ export default function Login() {
       {/* Top half - visuals */}
       <section
         style={{ height: "25vh", backgroundColor: "var(--svg-divider-bg)" }}
-        className="relative w-full flex items-center justify-center text-white overflow-hidden"
+        className="relative w-full flex items-center justify-center overflow-hidden"
       >
         <div className="max-w-4xl w-full px-6 flex items-center justify-center">
           <div className="absolute bottom-0">
             <img
               src="/Vector.png"
               alt="Tindig illustration"
-              className="mx-auto mb-4 w-36 h-auto drop-shadow-lg"
+              className="outline-shadow mx-auto mb-4 w-36 h-auto"
             />
           </div>
         </div>
@@ -110,42 +112,42 @@ export default function Login() {
 
       {/* Bottom half - form */}
       <section
-        style={{ height: "70vh" }}
+        style={{ height: "70vh", backgroundColor: "var(--background)" }}
         className="w-full relative flex items-center justify-center"
       >
         {/* Divider*/}
-          <div className="absolute top-0 left-0 w-full -mt-0 pointer-events-none">
-            <svg
-              className="svg-divider"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1000 240"
-              preserveAspectRatio="none"
-            >
-              <g>
-                <path
-            d="M1000 100C500 100 500 64 0 64V0h1000v100Z"
-            opacity="0.5"
-                ></path>
-                <path
-            d="M1000 100C500 100 500 34 0 34V0h1000v100Z"
-            opacity="0.5"
-                ></path>
-                <path d="M1000 100C500 100 500 4 0 4V0h1000v100Z"></path>
-              </g>
-            </svg>
-          </div>
+        <div className="absolute top-0 left-0 w-full -mt-0 pointer-events-none">
+          <svg
+            className="svg-divider"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1000 240"
+            preserveAspectRatio="none"
+          >
+            <g>
+              <path
+                d="M1000 100C500 100 500 64 0 64V0h1000v100Z"
+                opacity="0.5"
+              ></path>
+              <path
+                d="M1000 100C500 100 500 34 0 34V0h1000v100Z"
+                opacity="0.5"
+              ></path>
+              <path d="M1000 100C500 100 500 4 0 4V0h1000v100Z"></path>
+            </g>
+          </svg>
+        </div>
 
-          <div className="w-[85%] max-w-sm rounded-2xl p-8 bg-white shadow-xl">
-            <h2 className="text-center mb-6 tindig">Tindig</h2>
-            <label className="font-bold mb-6 text-black"> Log In</label>
+        <div className="w-[85%] max-w-sm rounded-2xl p-8 bg-white shadow-xl">
+          <h2 className="text-center mb-6 tindig text-gray-800">Tindig</h2>
+          <label className="font-bold mb-6 text-black">Log In</label>
 
-            <p className="paragraph">
-              By continuing, you are agreeing to our
-              <span className="terms"> Terms of Service</span> and
-              <span className="privacy"> Privacy Policy</span>
-            </p>
+          <p className="paragraph">
+            By continuing, you are agreeing to our
+            <span className="terms"> Terms of Service</span> and
+            <span className="privacy"> Privacy Policy</span>
+          </p>
 
-            {/* Display Error Message */}
+          {/* Display Error Message */}
           {error && (
             <div
               className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4"
@@ -223,9 +225,19 @@ export default function Login() {
 
       {/* Footer - Solid color */}
       <section
-        style={{ height: "5vh", backgroundColor: "var(--svg-divider-bg)" }}
+        style={{ height: "7vh", backgroundColor: "var(--svg-divider-bg)" }}
         className="w-full relative flex items-center justify-center"
-      ></section>
+      >
+        <div className="absolute bottom-0 left-0 w-full -mt-0 pointer-events-none">
+          <svg className="svg-divider w-full block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden>
+            <g fill="currentColor" transform="translate(0 100) scale(1 -1)">
+              <path d="M500 80.7C358 68 0 4 0 4V0h1000v84.7c-216 23.3-358 8.6-500-4Z" opacity=".3"></path>
+              <path d="M500 65.7C358 53 0 4 0 4V0h1000v62.7c-216 23.3-358 15.6-500 3Z" opacity=".5"></path>
+              <path d="M500 50.7C358 38 0 4 0 4V0h1000v40.7C784 64 642 63.3 500 50.7Z"></path>
+            </g>
+          </svg>
+        </div>
+      </section>
     </div>
   );
 }

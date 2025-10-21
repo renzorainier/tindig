@@ -141,7 +141,7 @@ const Register = () => {
             <img
               src="/Vector.png"
               alt="Tindig illustration"
-              className="mx-auto mb-4 w-36 h-auto drop-shadow-lg"
+              className="outline-shadow mx-auto mb-4 w-36 h-auto"
             />
           </div>
         </div>
@@ -222,9 +222,36 @@ const Register = () => {
       </section>
       {/* Footer - Solid color */}
       <section
-        style={{ height: "5vh", backgroundColor: "var(--svg-divider-bg)" }}
+        style={{ height: "7vh", backgroundColor: "var(--svg-divider-bg)" }}
         className="w-full relative flex items-center justify-center"
-      ></section>
+      >
+        <section
+          style={{ height: "7vh", backgroundColor: "var(--svg-divider-bg)" }}
+          className="w-full relative flex items-center justify-center"
+        >
+          <div className="absolute bottom-0 left-0 w-full -mt-0 pointer-events-none">
+            <svg
+              className="svg-divider w-full block"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1000 180"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
+              <g fill="currentColor" transform="translate(0 100) scale(1 -1)">
+                <path
+                  d="M500 80.7C358 68 0 4 0 4V0h1000v84.7c-216 23.3-358 8.6-500-4Z"
+                  opacity=".3"
+                ></path>
+                <path
+                  d="M500 65.7C358 53 0 4 0 4V0h1000v62.7c-216 23.3-358 15.6-500 3Z"
+                  opacity=".5"
+                ></path>
+                <path d="M500 50.7C358 38 0 4 0 4V0h1000v40.7C784 64 642 63.3 500 50.7Z"></path>
+              </g>
+            </svg>
+          </div>
+        </section>
+      </section>
     </div>
   );
 };

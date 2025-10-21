@@ -175,3 +175,12 @@ button.btn-primary, .btn-logout, .google-signin-btn { border-radius: 12px; }
 .svg-divider g {
   fill: var(--background) !important;
 }
+
+.outline-shadow {
+  filter:
+    drop-shadow(0 0 1px rgba(255,255,255,1))
+    drop-shadow(0 0 1px rgba(255,255,255,1))
+    drop-shadow(0 0 1px rgba(255,255,255,1))
+    drop-shadow(0 0 1px rgba(255,255,255,1))
+    drop-shadow(0 0 1px rgba(255,255,255,1));
+}

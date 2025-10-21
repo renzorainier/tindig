@@ -445,7 +445,7 @@ export default function Dashboard() {
               aria-checked={theme === "dark"}
               aria-label={`Toggle theme, currently ${theme}`}
               title={`Theme: ${theme}`}
-              className="inline-flex items-center gap-3 p-1 rounded-lg border border-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
+              className="inline-flex items-center gap-3 p-1 rounded-lg border border-white focus:outline-none"
             >
               {/* sliding label (shows Light Mode / Dark Mode) */}
               <span className="inline-flex overflow-hidden w-16 h-6">
