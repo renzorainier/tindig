@@ -13,9 +13,9 @@ export default function LandingPage() {
       <section
         style={{
           height: "50vh",
-          backgroundImage:
-            "linear-gradient(rgba(0,0,127,0.2), rgba(0,0,127,0.2)), url('https://cdn.svgator.com/images/2022/06/animated-svg-background-css.svg')",
-          backgroundSize: "cover",
+          // backgroundImage:
+          //   "linear-gradient(rgba(0,0,127,0.2), rgba(0,0,127,0.2)), url('https://cdn.svgator.com/images/2022/06/animated-svg-background-css.svg')",
+          // backgroundSize: "cover",
         }}
         className="relative overflow-hidden flex flex-col items-center justify-center"
       >
