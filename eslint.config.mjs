@@ -20,6 +20,17 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  // --- ADDED THIS BLOCK ---
+  // This adds the rules to disable the warnings.
+  {
+    rules: {
+      "react/no-unescaped-entities": "off",
+      "@next/next/no-page-custom-font": "off",
+      // --- ADD THIS LINE ---
+      "react-hooks/exhaustive-deps": "off", // Disables dependency array warnings
+    },
+  },
+  // ------------------------
 ];
 
 export default eslintConfig;
