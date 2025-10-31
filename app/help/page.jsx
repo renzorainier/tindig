@@ -83,10 +83,10 @@ export default function HelpPage() {
         {/* Insert inline style early so it applies to details in the page */}
         <style dangerouslySetInnerHTML={{ __html: faqStyle }} />
 
-        {/* 
+        {/*
         ===============
-        Physical Setup Section 
-        =============== 
+        Physical Setup Section
+        ===============
         */}
         <section
           aria-labelledby="setup-heading"
@@ -101,7 +101,7 @@ export default function HelpPage() {
 
           <div className="bg-white border border-gray-200 rounded-md p-4 mx-auto max-w-3xl text-justify text-sm text-gray-700 space-y-3">
             <p>
-              Before you start tracking your posture, you must ensure proper camera setup and environment conditions. Follow these guidelines to get the 
+              Before you start tracking your posture, you must ensure proper camera setup and environment conditions. Follow these guidelines to get the
               camera and environment right for accurate posture detection.
             </p>
             <img src="./help_setup.png" alt="Visualization of physical setup" />
@@ -128,9 +128,9 @@ export default function HelpPage() {
           </div>
         </section>
 
-        {/* 
+        {/*
         ===============
-        FAQ Section 
+        FAQ Section
         ===============
         */}
         <section aria-labelledby="faq-heading" className="w-full">
@@ -184,9 +184,9 @@ export default function HelpPage() {
           </div>
         </section>
 
-        {/* 
+        {/*
         ===============
-        External Resources Section 
+        External Resources Section
         ===============
         */}
         <section aria-labelledby="resources-heading" className="w-full mt-6">

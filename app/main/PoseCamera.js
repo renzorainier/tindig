@@ -775,7 +775,7 @@ export default function PoseCamera({ poseLandmarker }) {
           <button
             onClick={goBack}
             title="Go back"
-            className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 shadow-sm"
+            className="absolute left-0 top-1 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 shadow-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -794,7 +794,7 @@ export default function PoseCamera({ poseLandmarker }) {
             </svg>
             Back
           </button>
-          <h1 className="text-4xl font-extrabold text-center text-indigo-600 flex items-center justify-center">
+          <h1 className="text-4xl font-extrabold text-center text-indigo-600 flex items-center  justify-center">
             Posture Analyzer
           </h1>
         </div>
