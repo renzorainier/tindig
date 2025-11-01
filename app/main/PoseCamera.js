@@ -56,7 +56,19 @@ export default function PoseCamera({ poseLandmarker }) {
   const canvasRef = useRef(null);
   const { currentUser } = useAuth();
   const router = useRouter();
-  const audioAlertRef = useRef(null);
+
+  // --- EXISTING AUDIO REF ---
+  const audioAlertRef = useRef(null); // For bad posture
+
+  // --- NEW AUDIO REFS ---
+  const audioGoodPostureRef = useRef(null); // For achieving good posture
+  const audioCalibrateStartRef = useRef(null); // For starting calibration
+  const audioCalibrateDoneRef = useRef(null); // For completing calibration
+  const audioStartRecordRef = useRef(null); // For starting recording
+  const audioStopRecordRef = useRef(null); // For stopping recording
+  const audioPauseRef = useRef(null); // For when tracking pauses (unstable)
+  const audioResumeRef = useRef(null); // For when tracking resumes
+
   const [badPostureCountdown, setBadPostureCountdown] = useState(0);
   useEffect(() => {
     if (!currentUser) {
@@ -311,6 +323,10 @@ export default function PoseCamera({ poseLandmarker }) {
             if (!isPausedRef.current) {
               // --- NEW: Console log as requested ---
               console.log("Posture unstable, pausing tracker...");
+
+              // --- NEW: Play Pause Sound ---
+              playPauseSound();
+
               setIsPaused(true); // Write using setIsPaused
             }
           }
@@ -327,6 +343,10 @@ export default function PoseCamera({ poseLandmarker }) {
 
             if (elapsed >= PAUSE_RESET_MS) {
               console.log("Resuming tracker..."); // --- Optional: log for unpausing
+
+              // --- NEW: Play Resume Sound ---
+              playResumeSound();
+
               setIsPaused(false); // Write using setIsPaused
               goodPostureHoldTimerRef.current = null;
               flipCountRef.current = 0;
@@ -384,6 +404,13 @@ export default function PoseCamera({ poseLandmarker }) {
           if (elapsed >= GOOD_POSTURE_THRESHOLD_MS) {
             setStatusMessage("Good Posture ✅");
             setTriggeredReasons(["Keep it up!"]);
+
+            // --- NEW: Play Good Posture Sound ---
+            if (wasBadPostureRef.current === true) {
+              // Only play if they *were* in bad posture
+              playGoodPostureSound();
+            }
+
             wasBadPostureRef.current = false;
           } else {
             setStatusMessage("Returning to Good...");
@@ -479,6 +506,10 @@ export default function PoseCamera({ poseLandmarker }) {
       ]);
       return;
     }
+
+    // --- NEW: Play Calibrate Start Sound ---
+    playCalibrateStartSound();
+
     try {
       localStorage.removeItem("postureBaseline");
     } catch {}
@@ -510,6 +541,9 @@ export default function PoseCamera({ poseLandmarker }) {
   };
 
   const handleCalibrationComplete = (newBaseline) => {
+    // --- NEW: Play Calibrate Done Sound ---
+    playCalibrateDoneSound();
+
     // ... (function unchanged)
     try {
       localStorage.setItem("postureBaseline", JSON.stringify(newBaseline));
@@ -531,6 +565,10 @@ export default function PoseCamera({ poseLandmarker }) {
       setStatusMessage("Model not ready for recording");
       return;
     }
+
+    // --- NEW: Play Start Record Sound ---
+    playStartRecordSound();
+
     setSaveResult(null);
     recordingRef.current = true;
     recordingSamplesRef.current = [];
@@ -627,6 +665,9 @@ export default function PoseCamera({ poseLandmarker }) {
   };
 
   const stopRecordingAndShowSummary = () => {
+    // --- NEW: Play Stop Record Sound ---
+    playStopRecordSound();
+
     // ... (function unchanged)
     recordingRef.current = false;
     setIsRecording(false);
@@ -705,14 +746,48 @@ export default function PoseCamera({ poseLandmarker }) {
     }
   };
 
-  const playBadPostureSound = () => {
-    // ... (function unchanged)
-    if (audioAlertRef.current) {
-      audioAlertRef.current.currentTime = 0;
-      audioAlertRef.current
+  // --- NEW GENERIC HELPER ---
+  const playAudio = (audioRef) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current
         .play()
         .catch((e) => console.warn("Could not play sound:", e));
     }
+  };
+
+  // --- EXISTING FUNCTION (now using helper) ---
+  const playBadPostureSound = () => {
+    playAudio(audioAlertRef);
+  };
+
+  // --- NEW SOUND FUNCTIONS ---
+  const playGoodPostureSound = () => {
+    playAudio(audioGoodPostureRef);
+  };
+
+  const playCalibrateStartSound = () => {
+    playAudio(audioCalibrateStartRef);
+  };
+
+  const playCalibrateDoneSound = () => {
+    playAudio(audioCalibrateDoneRef);
+  };
+
+  const playStartRecordSound = () => {
+    playAudio(audioStartRecordRef);
+  };
+
+  const playStopRecordSound = () => {
+    playAudio(audioStopRecordRef);
+  };
+
+  const playPauseSound = () => {
+    playAudio(audioPauseRef);
+  };
+
+  const playResumeSound = () => {
+    playAudio(audioResumeRef);
   };
 
   const visualState = (() => {
@@ -760,10 +835,7 @@ export default function PoseCamera({ poseLandmarker }) {
 
   const currentStyle = stateStyles[visualState] || stateStyles.idle;
 
-  // --- JSX Below is Unchanged ---
-  // The logic for disabling buttons based on `isPaused` is already correct
-  // and will now work properly because `isPaused` state updates
-  // are correctly read by the `predict` loop.
+  // --- JSX Below is Unchanged (except for new <audio> tags) ---
 
   return (
     <div
@@ -794,7 +866,7 @@ export default function PoseCamera({ poseLandmarker }) {
             </svg>
             Back
           </button>
-          <h1 className="text-4xl font-extrabold text-center text-indigo-600 flex items-center  justify-center">
+          <h1 className="text-4xl font-extrabold text-center text-indigo-600 flex items-center  justify-center">
             Posture Analyzer
           </h1>
         </div>
@@ -803,7 +875,7 @@ export default function PoseCamera({ poseLandmarker }) {
         </p>
       </header>
 
-      <div className="relative w-full max-w-lg  shadow-xl rounded-xl overflow-hidden mb-8 border-4 border-gray-200 bg-white">
+      <div className="relative w-full max-w-lg  shadow-xl rounded-xl overflow-hidden mb-8 border-4 border-gray-200 bg-white">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500"></div>
@@ -859,8 +931,8 @@ export default function PoseCamera({ poseLandmarker }) {
               <span
                 key={index}
                 className={`px-4 py-2 text-sm sm:text-base md:text-lg font-medium rounded-full break-words max-w-full text-center flex items-center justify-center transition-colors duration-300 ${currentStyle.reasonPill}`}
-                style={{ 
-                  wordBreak: 'break-word', 
+                style={{
+                  wordBreak: 'break-word',
                   hyphens: 'auto',
                   minHeight: '2.5rem'
                 }}
@@ -1033,7 +1105,23 @@ export default function PoseCamera({ poseLandmarker }) {
         </div>
       </div>
 
+      {/* --- ALL AUDIO TAGS --- */}
       <audio ref={audioAlertRef} src="/wrong.wav" preload="auto" />
+      <audio ref={audioGoodPostureRef} src="/good.wav" preload="auto" />
+      <audio
+        ref={audioCalibrateStartRef}
+        src="/calibrate-start.wav"
+        preload="auto"
+      />
+      <audio
+        ref={audioCalibrateDoneRef}
+        src="/calibrate-done.wav"
+        preload="auto"
+      />
+      <audio ref={audioStartRecordRef} src="/record-start.wav" preload="auto" />
+      <audio ref={audioStopRecordRef} src="/record-stop.wav" preload="auto" />
+      <audio ref={audioPauseRef} src="/pause.wav" preload="auto" />
+      <audio ref={audioResumeRef} src="/resume.wav" preload="auto" />
 
       <SessionSummaryModal
         summary={sessionSummary}
