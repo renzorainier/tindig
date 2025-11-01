@@ -4,24 +4,20 @@ import React from "react";
 import LandingPage from "./landing/page";
 import Head from "next/head.js";
 
-// import PoseEstimator from './PoseEstimator';
-// import DepthEstimator from './DepthEstimator';
-// import Depth from './depth/Depth';
-
-// import WebcamTest from './WebcamTest'
-// import './App.css';
 
 export default function Home() {
   return (
     <>
       <Head>
-      <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
 
         <title>Tindig</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <div>
-             <LandingPage />
+      <div style={{ userSelect: "none" }}>
+        <div>
+          <LandingPage />
+        </div>
       </div>
     </>
   );
@@ -48,5 +44,3 @@ export default function Home() {
 //     </div>
 //   );
 // }
-
-
