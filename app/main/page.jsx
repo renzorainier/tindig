@@ -1,4 +1,4 @@
-// app/pose/page.js (This is the NEW page component)
+// app/pose/page.js
 
 "use client";
 
@@ -7,7 +7,6 @@ import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import PoseCamera from "./PoseCamera"; // Your main component
 
 // --- IndexedDB Helper Functions ---
-
 const DB_NAME = "MediaPipeModelDB";
 const STORE_NAME = "models";
 const MODEL_KEY = "pose_landmarker_lite";
@@ -45,7 +44,6 @@ async function saveModelToDb(modelBuffer) {
     const store = transaction.objectStore(STORE_NAME);
     const request = store.put(modelBuffer, MODEL_KEY);
     transaction.oncomplete = () => {
-      // THIS IS THE FIRST LOG YOU ASKED FOR:
       console.log("✅ Model saved to IndexedDB.");
       resolve();
     };
@@ -66,7 +64,7 @@ async function getModelFromDb() {
     const store = transaction.objectStore(STORE_NAME);
     const request = store.get(MODEL_KEY);
     request.onsuccess = (event) => {
-      resolve(event.target.result || null); // Returns the ArrayBuffer or null
+      resolve(event.target.result || null);
     };
     request.onerror = (event) => {
       reject(`Failed to get model: ${event.target.error}`);
@@ -96,37 +94,28 @@ export default function PoseModelLoader() {
         );
 
         // Check cache first
-        let modelBuffer = await getModelFromDb(); // This is an ArrayBuffer
+        let modelBuffer = await getModelFromDb();
 
         if (!modelBuffer) {
-          // NEW: More explicit log for a cache MISS
           console.log("Model not found in cache. Fetching from network...");
 
           const response = await fetch(MODEL_ASSET_PATH);
           if (!response.ok) {
             throw new Error(`Failed to fetch model: ${response.statusText}`);
           }
-          modelBuffer = await response.arrayBuffer(); // This is an ArrayBuffer
+          modelBuffer = await response.arrayBuffer();
 
-          // Save the fetched model to the cache for next time
-          // This function will log "✅ Model saved to IndexedDB."
           await saveModelToDb(modelBuffer);
-
         } else {
-          // NEW: THIS IS THE SECOND LOG YOU ASKED FOR:
           console.log("✅ Cache hit! Loading model from IndexedDB.");
         }
 
-        // --- FIX ---
-        // MediaPipe's 'modelAssetBuffer' expects a Uint8Array, not an ArrayBuffer.
-        // We must convert it.
+        // Convert ArrayBuffer to Uint8Array
         const modelUint8Array = new Uint8Array(modelBuffer);
 
-        // Create landmarker from the buffer
+        // Create landmarker
         const landmarker = await PoseLandmarker.createFromOptions(vision, {
           baseOptions: {
-            // --- FIX ---
-            // Pass the correctly typed Uint8Array to the model
             modelAssetBuffer: modelUint8Array,
             delegate: "GPU",
           },
@@ -144,39 +133,50 @@ export default function PoseModelLoader() {
     };
 
     initModel();
-  }, []); // Run once on mount
+  }, []);
 
-  // 1. Show a loading screen
+  // --- 1. Loading Screen (Improved UI) ---
   if (isLoading) {
     return (
       <div
-        className="flex flex-col items-center justify-center p-4 min-h-screen font-sans"
-        style={{ background: "var(--background)", color: "var(--foreground)" }}
+        className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 text-gray-800 animate-fadeIn"
       >
-        <h1 className="text-3xl font-bold text-indigo-600 mb-4">
-          Loading Posture Model...
+        <h1 className="text-3xl font-extrabold text-indigo-700 mb-6 tracking-tight">
+          Loading Posture Model
         </h1>
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500"></div>
-        <p className="text-gray-500 mt-4">Please wait, this may take a moment.</p>
+
+        {/* Modern Spinner */}
+        <div className="relative">
+          <div className="h-20 w-20 rounded-full border-4 border-indigo-300 border-t-indigo-600 animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-indigo-600 font-semibold text-sm animate-pulse">
+              AI
+            </span>
+          </div>
+        </div>
+
+        {/* Loading text with subtle animation */}
+        <p className="mt-6 text-gray-600 text-sm animate-pulse">
+          Initializing pose model... this may take a few seconds.
+        </p>
       </div>
     );
   }
 
-  // 2. Show an error screen
+  // --- 2. Error Screen ---
   if (errorMessage) {
     return (
       <div
-        className="flex flex-col items-center justify-center p-4 min-h-screen font-sans"
-        style={{ background: "var(--background)", color: "var(--foreground)" }}
+        className="flex flex-col items-center justify-center p-4 min-h-screen font-sans bg-red-50 text-gray-800"
       >
         <h1 className="text-3xl font-bold text-red-600 mb-4">
           Model Failed to Load
         </h1>
-        <p className="text-gray-500 mt-4">{errorMessage}</p>
+        <p className="text-gray-600 mt-2">{errorMessage}</p>
       </div>
     );
   }
 
-  // 3. If loaded, render the main app
+  // --- 3. If loaded, render the main app ---
   return <PoseCamera poseLandmarker={poseLandmarker} />;
 }
