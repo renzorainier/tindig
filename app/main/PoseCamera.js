@@ -1110,7 +1110,7 @@ export default function PoseCamera({ poseLandmarker }) {
       <audio ref={audioGoodPostureRef} src="/good.wav" preload="auto" />
       <audio
         ref={audioCalibrateStartRef}
-        src="/calibrate-start.wav"
+        src="/calibrate.wav"
         preload="auto"
       />
       <audio
@@ -1118,8 +1118,8 @@ export default function PoseCamera({ poseLandmarker }) {
         src="/calibrate-done.wav"
         preload="auto"
       />
-      <audio ref={audioStartRecordRef} src="/record-start.wav" preload="auto" />
-      <audio ref={audioStopRecordRef} src="/record-stop.wav" preload="auto" />
+      <audio ref={audioStartRecordRef} src="/calibrate.wav" preload="auto" />
+      <audio ref={audioStopRecordRef} src="/calibrate-done.wav" preload="auto" />
       <audio ref={audioPauseRef} src="/pause.wav" preload="auto" />
       <audio ref={audioResumeRef} src="/resume.wav" preload="auto" />
 
