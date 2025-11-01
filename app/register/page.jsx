@@ -130,7 +130,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ userSelect: "none" }}>
       {/* Top half - visuals */}
       <section
         style={{ height: "25vh", backgroundColor: "var(--svg-divider-bg)" }}
