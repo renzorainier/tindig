@@ -13,7 +13,7 @@ export default function Home() {
 
         <title>Tindig</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta property="og:image" content="https://dvbs.vercel.app/target.png" />
+          {/* <meta property="og:image" content="https://dvbs.vercel.app/target.png" /> */}
       </Head>
       <div style={{ userSelect: "none" }}>
         <div>
