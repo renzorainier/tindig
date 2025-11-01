@@ -23,7 +23,7 @@ export default function LandingPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-white text-gray-800 font-inter">
+    <main className="min-h-screen flex flex-col bg-white text-gray-800 font-inter" style={{ userSelect: "none" }}>
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center w-full px-4 py-20 sm:py-24 md:py-32 overflow-hidden">
         {/* Subtle background glow */}
@@ -191,7 +191,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-     
+
 
     </main>
   );

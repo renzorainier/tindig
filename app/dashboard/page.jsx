@@ -376,7 +376,7 @@ export default function Dashboard() {
   // Card div for containing progress stats
   function StatCard({ title, value, description, progress }) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-5 flex flex-col justify-between">
+      <div style={{ userSelect: "none" }} className="bg-white rounded-xl shadow-md p-5 flex flex-col justify-between">
         <div>
           <h3 className="text-sm text-[var(--foreground)]">{title}</h3>
           <p className="text-2xl font-semibold mt-2">{value}</p>
