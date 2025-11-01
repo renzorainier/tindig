@@ -278,13 +278,13 @@ export default function PoseCamera({ poseLandmarker }) {
         }
         const fullReasons = reasons.map((r) => {
           if (r === "Slouching")
-            return "Slouching: Head too far forward. Sit up straight!";
+            return "Slouching: Move back from screen";
           if (r === "Leaning Back")
-            return "Leaning Back: Too far from the screen. Center yourself.";
+            return "Leaning: Move closer";
           if (r === "Shoulders Uneven")
-            return "Shoulders Uneven: Level your shoulders.";
+            return "Shoulders: Level them";
           if (r === "Head Offset")
-            return "Head Offset/Tilt: Keep your head centered.";
+            return "Head: Center position";
           return r;
         });
 
@@ -858,7 +858,12 @@ export default function PoseCamera({ poseLandmarker }) {
             {triggeredReasons.map((reason, index) => (
               <span
                 key={index}
-                className={`px-4 py-1 text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300 ${currentStyle.reasonPill}`}
+                className={`px-4 py-2 text-sm sm:text-base md:text-lg font-medium rounded-full break-words max-w-full text-center flex items-center justify-center transition-colors duration-300 ${currentStyle.reasonPill}`}
+                style={{ 
+                  wordBreak: 'break-word', 
+                  hyphens: 'auto',
+                  minHeight: '2.5rem'
+                }}
               >
                 {reason}
               </span>

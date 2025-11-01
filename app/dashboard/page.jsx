@@ -8,10 +8,15 @@ import { useRouter } from "next/navigation";
 
 import { db } from "../firebase/config";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import SessionSummaryModal from "../main/SessionSummaryModal";
 
 export default function Dashboard() {
   const router = useRouter();
   const { currentUser, logout } = useAuth();
+  // show modal listing all summaries
+  const [showAllSummariesModal, setShowAllSummariesModal] = useState(false);
+  // selected summary for detail view
+  const [selectedSummary, setSelectedSummary] = useState(null);
 
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
@@ -30,6 +35,12 @@ export default function Dashboard() {
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1024
   );
+  // control showing all recent sessions vs limited view
+  const [showAllRecent, setShowAllRecent] = useState(false);
+  // derive displayed recent sessions (default: last 5)
+  const recentSessions = showAllRecent
+    ? sessions.slice().reverse()
+    : sessions.slice(-5).reverse();
 
   // Theme (light / dark)
   const [theme, setTheme] = useState("light");
@@ -64,7 +75,16 @@ export default function Dashboard() {
       next === "dark" ? "dark" : "light";
   };
 
-  const isGoodSession = (meanMetrics) => {
+  const isGoodSession = (summaryOrMetrics) => {
+    // prefer summary if available
+    if (!summaryOrMetrics) return false;
+    // If a summary object is passed, use the goodPosturePercent threshold
+    if (typeof summaryOrMetrics.goodPosturePercent !== "undefined") {
+      const gp = Number(summaryOrMetrics.goodPosturePercent || 0);
+      return gp >= 50; // treat >=50% good posture as "Good"
+    }
+    // fallback to old meanMetrics heuristic
+    const meanMetrics = summaryOrMetrics.meanMetrics ?? summaryOrMetrics;
     if (!meanMetrics) return false;
     const sh = Number(meanMetrics.shoulderDiffPx ?? 9999);
     const ho = Number(meanMetrics.headOffsetX ?? 9999);
@@ -164,6 +184,12 @@ export default function Dashboard() {
             dateStr,
             meanMetrics: data.meanMetrics || null,
             baseline: data.baseline || null,
+            summary: data.summary || null,
+            durationMs: data.durationMs ?? null,
+            timeline: data.timeline || data.summary?.timeline || [], // Include timeline data
+            frames: data.frames || null,
+            createdAt: data.createdAt || null,
+            userId: data.userId || null,
           };
         });
 
@@ -172,7 +198,8 @@ export default function Dashboard() {
         let good = 0;
         let bad = 0;
         docs.forEach((s) => {
-          if (isGoodSession(s.meanMetrics)) good++;
+          // prefer summary for classification; fallback handled in isGoodSession
+          if (isGoodSession(s.summary ?? s.meanMetrics)) good++;
           else bad++;
         });
 
@@ -663,40 +690,167 @@ export default function Dashboard() {
                   No sessions recorded yet.
                 </div>
               )}
-              {sessions
-                .slice(-8)
-                .reverse()
-                .map((s) => (
-                  <div
-                    key={s.id}
-                    className="p-3 flex items-center justify-between rounded-lg"
-                  >
-                    <div>
-                      <div className="text-sm font-medium">{s.dateStr}</div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Shoulder{" "}
-                        {Number(s.meanMetrics?.shoulderDiffPx ?? 0).toFixed(1)}{" "}
-                        px • Head{" "}
-                        {Number(s.meanMetrics?.headOffsetX ?? 0).toFixed(1)} px
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      {isGoodSession(s.meanMetrics) ? (
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
-                          Good
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">
-                          Needs Work
-                        </span>
-                      )}
+              {recentSessions.map((s) => (
+                <div
+                  key={s.id}
+                  className="p-3 flex items-center justify-between rounded-lg"
+                >
+                  <div>
+                    <div className="text-sm font-medium">{s.dateStr}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {s.summary
+                        ? `Good ${Number(
+                            s.summary.goodPosturePercent ?? 0
+                          ).toFixed(1)}% • Bad ${Number(
+                            s.summary.badPosturePercent ?? 0
+                          ).toFixed(1)}%`
+                        : `Shoulder ${Number(
+                            s.meanMetrics?.shoulderDiffPx ?? 0
+                          ).toFixed(1)} px • Head ${Number(
+                            s.meanMetrics?.headOffsetX ?? 0
+                          ).toFixed(1)} px`}
                     </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    {isGoodSession(s.summary ?? s.meanMetrics) ? (
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
+                        Good
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">
+                        Needs Work
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {/* toggle button */}
+              {sessions.length > 5 && (
+                <div className="mt-3 flex justify-center">
+                  <button
+                    onClick={() => setShowAllRecent((s) => !s)}
+                    className="text-sm underline"
+                    aria-expanded={showAllRecent}
+                  >
+                    {showAllRecent ? "Show less" : `Show all (${sessions.length})`}
+                  </button>
+                </div>
+              )}
+              {/* show-all-summaries button */}
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => setShowAllSummariesModal(true)}
+                  className="text-sm underline"
+                >
+                  View all session summaries
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* All Summaries modal (list) */}
+      {showAllSummariesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-2xl rounded-xl bg-white p-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">All Session Summaries</h3>
+              <button
+                onClick={() => setShowAllSummariesModal(false)}
+                className="text-sm text-gray-600 underline"
+              >
+                Close
+              </button>
+            </div>
+            <div className="max-h-96 overflow-y-auto divide-y rounded-md border bg-gray-50 p-2">
+              {sessions.length === 0 && (
+                <div className="p-4 text-sm text-gray-500">No summaries yet.</div>
+              )}
+              {sessions
+                .slice()
+                .reverse()
+                .map((s) => {
+                  // Safely determine good/bad percentages
+                  const isGood = isGoodSession(s.meanMetrics);
+                  const hasSummary = !!s.summary;
+                  const goodPercent = hasSummary
+                    ? Number(s.summary.goodPosturePercent ?? 0)
+                    : isGood
+                    ? 100
+                    : 0;
+                  const badPercent = hasSummary
+                    ? Number(s.summary.badPosturePercent ?? 0)
+                    : isGood
+                    ? 0
+                    : 100;
+
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        const normalized = {
+                          // Preserve original summary if it exists
+                          ...(s.summary || {}),
+                          // Add missing fields
+                          goodPosturePercent: s.summary?.goodPosturePercent ?? (isGood ? 100 : 0),
+                          badPosturePercent: s.summary?.badPosturePercent ?? (isGood ? 0 : 100),
+                          issueBreakdown: s.summary?.issueBreakdown ?? {
+                            slouchingTimeMs: 0,
+                            leaningBackTimeMs: 0,
+                            headTiltTimeMs: 0,
+                            shoulderTimeMs: isGood ? 0 : (s.durationMs ?? 0),
+                          },
+                          // Ensure timeline exists and use original if available
+                          timeline: s.timeline || s.summary?.timeline || [{
+                            type: isGood ? "Good" : "Bad",
+                            reasons: isGood ? [] : ["Posture needs work"],
+                            durationMs: s.durationMs ?? 0,
+                            startTime: s.t,
+                            endTime: s.t + (s.durationMs ?? 0),
+                            state: isGood ? "Good" : '["Posture needs work"]',
+                          }],
+                          totalDurationMs: s.durationMs ?? 0,
+                          baseline: s.baseline ?? null,
+                          meanMetrics: s.meanMetrics ?? null,
+                          clientCreatedAt: s.t,
+                          clientCreatedAtDate: s.dateStr,
+                          frames: s.frames ?? null,
+                          createdAt: s.createdAt ?? null,
+                        };
+                        setSelectedSummary(normalized);
+                        setShowAllSummariesModal(false);
+                      }}
+                      className="w-full text-left p-3 hover:bg-white/50 flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="text-sm font-medium">{s.dateStr}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {hasSummary
+                            ? `Good ${goodPercent.toFixed(1)}% • Bad ${badPercent.toFixed(1)}%`
+                            : `${isGood ? "Good" : "Needs Work"} • ${
+                                s.durationMs
+                                  ? `${Math.round(s.durationMs / 1000)}s`
+                                  : "No duration"
+                              }`}
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-400">View</div>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Detail summary modal */}
+      {selectedSummary && (
+        <SessionSummaryModal
+          summary={selectedSummary}
+          onClose={() => setSelectedSummary(null)}
+          onSave={() => setSelectedSummary(null)}
+        />
+      )}
     </div>
   );
 }
