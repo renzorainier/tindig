@@ -175,21 +175,7 @@ export default function LandingPage() {
       </section>
 
       {/* NEW: "See It in Action" Section */}
-      <section className="w-full bg-white py-20 sm:py-24">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-            See It in Action
-          </h2>
-          <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-2xl mx-auto">
-            Our clean interface makes it easy to track your progress and stay
-            motivated on your journey to better posture.
-          </p> {/* <-- This was </imgp> */}
-          <div className="bg-gray-100 rounded-lg shadow-xl overflow-hidden border border-gray-200 p-4 sm:p-6 flex justify-center items-center aspect-video max-w-4xl mx-auto">
-            {/* This tag will render an image. The container gives it a nice frame. */}
-            [Image of posture app interface dashboard]
-          </div>
-        </div>
-      </section>
+
 
 
 

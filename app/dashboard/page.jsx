@@ -10,6 +10,13 @@ import { db } from "../firebase/config";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import SessionSummaryModal from "../main/SessionSummaryModal";
 
+import {
+  FiSun,
+  FiMoon,
+  FiLogOut,
+  FiHelpCircle,
+  FiCamera,
+} from "react-icons/fi";
 export default function Dashboard() {
   const router = useRouter();
   const { currentUser, logout } = useAuth();
@@ -376,7 +383,9 @@ export default function Dashboard() {
   // Card div for containing progress stats
   function StatCard({ title, value, description, progress }) {
     return (
-      <div style={{ userSelect: "none" }} className="bg-white rounded-xl shadow-md p-5 flex flex-col justify-between">
+      <div
+        style={{ userSelect: "none" }}
+        className="bg-white rounded-xl shadow-md p-5 flex flex-col justify-between">
         <div>
           <h3 className="text-sm text-[var(--foreground)]">{title}</h3>
           <p className="text-2xl font-semibold mt-2">{value}</p>
@@ -450,81 +459,70 @@ export default function Dashboard() {
       style={{
         background:
           "linear-gradient(180deg, var(--background) 0%, var(--background-gradient-end) 100%)",
-      }}
-    >
+      }}>
       {/* Top nav */}
-      <nav className="w-full p-4 nav-surface nav-border shadow-md backdrop-blur-sm sticky top-0 z-30 rounded-b-2xl">
+      <nav
+        className={`w-full p-4 nav-surface nav-border shadow-md backdrop-blur-sm sticky top-0 z-30 rounded-b-2xl transition-colors duration-500 ease-in-out`}>
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="tindig text-lg">Tindig</h1>
+            <h1 className="tindig text-lg transition-colors duration-500">
+              Tindig
+            </h1>
           </div>
+
           <div className="flex items-center gap-3">
-            <div className="text-sm mr-3 hidden sm:block nav-text">
+            <div className="text-sm mr-3 hidden sm:block nav-text transition-colors duration-500">
               Signed in as{" "}
               <strong className="nav-strong">
                 {currentUser?.email || "User"}
               </strong>
             </div>
-            {/* Theme toggle button with additional accessibility features */}
+
+            {/* 🌗 Theme Toggle with Animated Icon + Text */}
             <button
               onClick={toggleTheme}
               role="switch"
               aria-checked={theme === "dark"}
               aria-label={`Toggle theme, currently ${theme}`}
               title={`Theme: ${theme}`}
-              className="inline-flex items-center gap-3 p-1 rounded-lg border border-white focus:outline-none"
-            >
-              {/* sliding label (shows Light Mode / Dark Mode) */}
-              <span className="inline-flex overflow-hidden w-16 h-6">
+              className="relative inline-flex items-center gap-2 justify-center px-3 py-2 rounded-lg nav-text hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none transition-all duration-500 ease-in-out">
+              {/* Animated Icon */}
+              <div className="relative w-5 h-5">
                 <span
-                  className="inline-flex"
-                  style={{
-                    transform:
-                      theme === "dark" ? "translateX(-50%)" : "translateX(0)",
-                    transition: "transform 220ms ease",
-                  }}
-                >
-                  <span className="w-16 text-sm select-none inline-flex flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <circle cx="12" cy="12" r="3" fill="currentColor" />
-                    </svg>
-                    <span>Light</span>
-                  </span>
-                  <span className="w-16 text-sm select-none inline-flex flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 text-yellow-200"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <span>Dark</span>
-                  </span>
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 transform ${
+                    theme === "dark"
+                      ? "opacity-100 scale-100 rotate-0"
+                      : "opacity-0 scale-50 -rotate-90"
+                  }`}>
+                  <FiSun className="w-5 h-5" />
                 </span>
+
+                <span
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 transform ${
+                    theme === "dark"
+                      ? "opacity-0 scale-50 rotate-90"
+                      : "opacity-100 scale-100 rotate-0"
+                  }`}>
+                  <FiMoon className="w-5 h-5" />
+                </span>
+              </div>
+
+              {/* Animated Text */}
+              <span
+                className={`text-sm font-medium transition-all duration-500 ${
+                  theme === "dark"
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-100 translate-x-0"
+                }`}>
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </span>
             </button>
+
+            {/* 🔒 Logout Button */}
             <button
               onClick={handleLogout}
-              className="btn-primary px-4 py-2 rounded-md text-sm"
-            >
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none transition-colors">
+              <FiLogOut className="w-4 h-4" />
               Logout
             </button>
           </div>
@@ -566,16 +564,19 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            {/* Start Camera */}
             <button
               onClick={handleStartDetection}
-              className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl font-semibold transition w-full sm:w-auto"
-            >
+              className="inline-flex items-center justify-center gap-2 bg-white/30 hover:bg-white/40 text-white px-5 py-2.5 rounded-xl font-semibold transition-colors w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              <FiCamera className="w-5 h-5" />
               Start Camera
             </button>
+
+            {/* Help */}
             <button
               onClick={() => router.push("/help")}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl w-full sm:w-auto"
-            >
+              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl font-medium transition-colors w-full sm:w-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              <FiHelpCircle className="w-5 h-5" />
               Help
             </button>
           </div>
@@ -600,8 +601,7 @@ export default function Dashboard() {
               <div className="text-right">
                 <button
                   onClick={() => setShowIndexConfig((s) => !s)}
-                  className="text-sm underline"
-                >
+                  className="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded">
                   Show
                 </button>
               </div>
@@ -628,9 +628,9 @@ export default function Dashboard() {
 
         {/* Stats + Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
+          <div className="card p-3 sm:p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl lg:col-span-1">
             <h3 className="text-sm text-gray-500">Total Sessions</h3>
-            <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center justify-between mt-2">
               <div>
                 <p className="text-3xl font-bold">{totals.total}</p>
                 <p className="text-xs text-gray-500 mt-1">
@@ -648,23 +648,31 @@ export default function Dashboard() {
               />
             </div>
           </div>
-          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
-            <h3 className="text-sm text-gray-500">Good Sessions</h3>
-            <p className="text-3xl font-bold mt-3 text-green-600">
-              {totals.good}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              {totals.good}/{totals.total} sessions
-            </p>
-          </div>
-          <div className="card p-4 sm:p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
-            <h3 className="text-sm text-gray-500">Needs Improvement</h3>
-            <p className="text-3xl font-bold mt-3 text-yellow-600">
-              {totals.bad}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              {totals.bad}/{totals.total} sessions
-            </p>
+
+          <div className="grid grid-cols-2 lg:col-span-2 gap-4">
+            <div className="card p-3 sm:p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-sm text-gray-500">Good</h3>
+                <p className="text-xs text-gray-500">
+                  {totals.good}/{totals.total}
+                </p>
+              </div>
+              <p className="text-3xl font-bold mt-2 text-green-600">
+                {totals.good}
+              </p>
+            </div>
+
+            <div className="card p-3 sm:p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-sm text-gray-500">Needs Work</h3>
+                <p className="text-xs text-gray-500">
+                  {totals.bad}/{totals.total}
+                </p>
+              </div>
+              <p className="text-3xl font-bold mt-2 text-yellow-600">
+                {totals.bad}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -676,7 +684,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Recent Sessions list */}
+          {/* Recent Sessions */}
           <div className="card p-3 shadow-lg ring-1 ring-black/5 dark:ring-white/5 rounded-2xl">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-semibold">Recent Sessions</h4>
@@ -684,17 +692,16 @@ export default function Dashboard() {
                 {sessions.length} entries
               </div>
             </div>
-            <div className="mt-3 divide-y">
+            <div className="mt-3 divide-y divide-gray-200/50 dark:divide-white/10">
               {sessions.length === 0 && (
-                <div className="p-4 text-sm text-gray-500">
+                <div className="p-4 text-sm text-center text-gray-500">
                   No sessions recorded yet.
                 </div>
               )}
               {recentSessions.map((s) => (
                 <div
                   key={s.id}
-                  className="p-3 flex items-center justify-between rounded-lg"
-                >
+                  className="p-3 flex items-center justify-between">
                   <div>
                     <div className="text-sm font-medium">{s.dateStr}</div>
                     <div className="text-xs text-gray-500 mt-1">
@@ -713,35 +720,33 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     {isGoodSession(s.summary ?? s.meanMetrics) ? (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
                         Good
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-yellow-50 text-yellow-800">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300">
                         Needs Work
                       </span>
                     )}
                   </div>
                 </div>
               ))}
-              {/* toggle button */}
               {sessions.length > 5 && (
-                <div className="mt-3 flex justify-center">
+                <div className="pt-3 flex justify-center">
                   <button
                     onClick={() => setShowAllRecent((s) => !s)}
-                    className="text-sm underline"
-                    aria-expanded={showAllRecent}
-                  >
-                    {showAllRecent ? "Show less" : `Show all (${sessions.length})`}
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+                    aria-expanded={showAllRecent}>
+                    {showAllRecent
+                      ? "Show less"
+                      : `Show all (${sessions.length})`}
                   </button>
                 </div>
               )}
-              {/* show-all-summaries button */}
-              <div className="mt-4 flex justify-center">
+              <div className="pt-4 flex justify-center">
                 <button
                   onClick={() => setShowAllSummariesModal(true)}
-                  className="text-sm underline"
-                >
+                  className="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded">
                   View all session summaries
                 </button>
               </div>
@@ -750,28 +755,28 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* All Summaries modal (list) */}
+      {/* All Summaries Modal */}
       {showAllSummariesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-2xl rounded-xl bg-white p-4 shadow-2xl">
+          <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-gray-900 text-[var(--foreground)] p-4 shadow-2xl">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold">All Session Summaries</h3>
               <button
                 onClick={() => setShowAllSummariesModal(false)}
-                className="text-sm text-gray-600 underline"
-              >
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded">
                 Close
               </button>
             </div>
-            <div className="max-h-96 overflow-y-auto divide-y rounded-md border bg-gray-50 p-2">
+            <div className="max-h-96 overflow-y-auto divide-y divide-gray-200 dark:divide-white/10 rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-gray-950/50 p-2">
               {sessions.length === 0 && (
-                <div className="p-4 text-sm text-gray-500">No summaries yet.</div>
+                <div className="p-4 text-sm text-gray-500">
+                  No summaries yet.
+                </div>
               )}
               {sessions
                 .slice()
                 .reverse()
                 .map((s) => {
-                  // Safely determine good/bad percentages
                   const isGood = isGoodSession(s.meanMetrics);
                   const hasSummary = !!s.summary;
                   const goodPercent = hasSummary
@@ -790,26 +795,30 @@ export default function Dashboard() {
                       key={s.id}
                       onClick={() => {
                         const normalized = {
-                          // Preserve original summary if it exists
                           ...(s.summary || {}),
-                          // Add missing fields
-                          goodPosturePercent: s.summary?.goodPosturePercent ?? (isGood ? 100 : 0),
-                          badPosturePercent: s.summary?.badPosturePercent ?? (isGood ? 0 : 100),
+                          goodPosturePercent:
+                            s.summary?.goodPosturePercent ?? (isGood ? 100 : 0),
+                          badPosturePercent:
+                            s.summary?.badPosturePercent ?? (isGood ? 0 : 100),
                           issueBreakdown: s.summary?.issueBreakdown ?? {
                             slouchingTimeMs: 0,
                             leaningBackTimeMs: 0,
                             headTiltTimeMs: 0,
-                            shoulderTimeMs: isGood ? 0 : (s.durationMs ?? 0),
+                            shoulderTimeMs: isGood ? 0 : s.durationMs ?? 0,
                           },
-                          // Ensure timeline exists and use original if available
-                          timeline: s.timeline || s.summary?.timeline || [{
-                            type: isGood ? "Good" : "Bad",
-                            reasons: isGood ? [] : ["Posture needs work"],
-                            durationMs: s.durationMs ?? 0,
-                            startTime: s.t,
-                            endTime: s.t + (s.durationMs ?? 0),
-                            state: isGood ? "Good" : '["Posture needs work"]',
-                          }],
+                          timeline: s.timeline ||
+                            s.summary?.timeline || [
+                              {
+                                type: isGood ? "Good" : "Bad",
+                                reasons: isGood ? [] : ["Posture needs work"],
+                                durationMs: s.durationMs ?? 0,
+                                startTime: s.t,
+                                endTime: s.t + (s.durationMs ?? 0),
+                                state: isGood
+                                  ? "Good"
+                                  : '["Posture needs work"]',
+                              },
+                            ],
                           totalDurationMs: s.durationMs ?? 0,
                           baseline: s.baseline ?? null,
                           meanMetrics: s.meanMetrics ?? null,
@@ -821,13 +830,14 @@ export default function Dashboard() {
                         setSelectedSummary(normalized);
                         setShowAllSummariesModal(false);
                       }}
-                      className="w-full text-left p-3 hover:bg-white/50 flex items-center justify-between"
-                    >
+                      className="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-colors flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                       <div>
                         <div className="text-sm font-medium">{s.dateStr}</div>
                         <div className="text-xs text-gray-500 mt-1">
                           {hasSummary
-                            ? `Good ${goodPercent.toFixed(1)}% • Bad ${badPercent.toFixed(1)}%`
+                            ? `Good ${goodPercent.toFixed(
+                                1
+                              )}% • Bad ${badPercent.toFixed(1)}%`
                             : `${isGood ? "Good" : "Needs Work"} • ${
                                 s.durationMs
                                   ? `${Math.round(s.durationMs / 1000)}s`
@@ -843,6 +853,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
       {/* Detail summary modal */}
       {selectedSummary && (
         <SessionSummaryModal
