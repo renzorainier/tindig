@@ -151,7 +151,7 @@ export default function PoseCamera({ poseLandmarker }) {
       ctx.beginPath();
       ctx.moveTo(left.x * width, left.y * height);
       ctx.lineTo(right.x * width, right.y * height);
-      ctx.strokeStyle = "#FFD700";
+      ctx.strokeStyle = "#0498c9";
       ctx.lineWidth = 3;
       ctx.stroke();
     }
