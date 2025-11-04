@@ -129,9 +129,9 @@ export default function PoseCamera({ poseLandmarker }) {
     const L_EYE = 2;
     const R_EYE = 5;
     const colors = {
-      [HEAD]: "#FF4500",
-      [L_SHOULDER]: "#44ff1eff",
-      [R_SHOULDER]: "#44ff1eff",
+      [HEAD]: "#00BFFF",
+      [L_SHOULDER]: "#00BFFF",
+      [R_SHOULDER]: "#00BFFF",
       [L_EYE]: "#00BFFF",
       [R_EYE]: "#00BFFF",
     };

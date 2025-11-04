@@ -2,13 +2,13 @@
 
 import React from "react";
 import {
-  FiX,
+  // FiX removed
   FiClock,
   FiActivity,
   FiList,
   FiCheckCircle,
   FiAlertCircle,
-  FiSave,
+  // FiSave removed
   FiArrowLeftCircle,
 } from "react-icons/fi";
 
@@ -21,21 +21,10 @@ function formatTime(ms) {
   return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 }
 
-// Reusable close button
-function CloseButton({ onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      type="button"
-      aria-label="Close modal"
-      className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
-    >
-      <FiX className="w-6 h-6" />
-    </button>
-  );
-}
+// REMOVED: The CloseButton component is no longer needed.
 
-export default function SessionSummaryModal({ summary, onClose, onSave }) {
+// FIXED: Removed onSave from the props
+export default function SessionSummaryModal({ summary, onClose }) {
   if (!summary) return null;
 
   const relevantIssues = [
@@ -67,13 +56,12 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
             <FiActivity className="text-blue-600 dark:text-blue-400" />
             Session Summary
           </h2>
-          <CloseButton onClick={onClose} />
+          {/* REMOVED: CloseButton was here */}
         </div>
 
-        {/* Body */}
+        {/* Body (No changes) */}
         <div className="p-4 sm:p-6 overflow-y-auto text-gray-800 dark:text-gray-200">
           {/* Total Time */}
-          {/* Nested BG: dark:bg-gray-700 */}
           <div className="mb-4 rounded-lg bg-blue-50 dark:bg-gray-700 p-4 text-center text-base sm:text-lg text-blue-800 dark:text-blue-200 flex items-center justify-center gap-2">
             <FiClock className="text-blue-500 dark:text-blue-400" />
             Total Time:
@@ -84,7 +72,6 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
 
           {/* Progress Bar */}
           <div
-            // FIXED: Track BG dark:bg-gray-700
             className="my-6 h-10 sm:h-12 w-full overflow-hidden rounded-full bg-blue-200 dark:bg-gray-700 flex"
             role="progressbar"
             aria-valuenow={summary.goodPosturePercent}
@@ -146,7 +133,6 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
                 ))}
               </ul>
             ) : (
-              // FIXED: Brighter faded text dark:text-gray-400
               <p className="text-sm text-blue-400 dark:text-gray-400 italic">
                 No specific issues detected. Great job!
               </p>
@@ -158,7 +144,6 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
             <h3 className="mb-3 border-b border-gray-200 dark:border-gray-700 pb-2 font-bold flex items-center gap-2 text-blue-800 dark:text-blue-200">
               <FiList /> Session Log
             </h3>
-            {/* Nested BG: dark:bg-gray-700 */}
             <ul className="max-h-48 space-y-2 overflow-y-auto rounded-md border border-gray-300 dark:border-gray-600 bg-blue-50 dark:bg-gray-700 p-3">
               {summary.timeline.length > 0 ? (
                 summary.timeline.map((event, index) => (
@@ -172,11 +157,9 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
                         Good Posture
                       </span>
                     ) : (
-                      // FIXED: Swapped dark blue for dark:text-orange-400
                       <span className="font-medium text-blue-400 dark:text-orange-400">
                         <FiAlertCircle className="inline mr-1" />
                         Needs Improvement{" "}
-                        {/* FIXED: dark:text-orange-500 for reasons */}
                         <span className="text-xs text-blue-300 dark:text-orange-500">
                           ({event.reasons.join(", ")})
                         </span>
@@ -188,7 +171,6 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
                   </li>
                 ))
               ) : (
-                // FIXED: Brighter faded text dark:text-gray-400
                 <li className="text-sm text-blue-400 dark:text-gray-400 italic">
                   No session log entries.
                 </li>
@@ -201,7 +183,6 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
             <h3 className="mb-3 border-b border-gray-200 dark:border-gray-700 pb-2 font-bold flex items-center gap-2 text-blue-800 dark:text-blue-200">
               <FiActivity /> Analysis & Recommendations
             </h3>
-            {/* Nested BG: dark:bg-gray-700 */}
             <div className="rounded-lg bg-blue-50 dark:bg-gray-700 p-4 text-sm space-y-3">
               <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200 font-medium">
                 <FiCheckCircle /> Summary:
@@ -257,23 +238,18 @@ export default function SessionSummaryModal({ summary, onClose, onSave }) {
         </div>
 
         {/* Footer */}
-        {/* Footer BG: dark:bg-gray-900 */}
         <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 mt-auto bg-white dark:bg-gray-900">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 ">
+          {/* FIXED: Simplified flex container */}
+          <div className="flex">
+            {/* FIXED: This button now has the primary styles */}
             <button
               onClick={onClose}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-6 py-3 font-semibold text-blue-700 dark:text-gray-100 shadow-sm hover:bg-blue-100 dark:hover:bg-gray-600 transition"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 dark:bg-blue-500 px-6 py-3 font-semibold text-white shadow-md hover:bg-blue-700 dark:hover:bg-blue-600 transition"
             >
               <FiArrowLeftCircle className="w-5 h-5" />
               Close
             </button>
-            <button
-              onClick={onSave}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 dark:bg-blue-500 px-6 py-3 font-semibold text-white shadow-md hover:bg-blue-700 dark:hover:bg-blue-600 transition"
-            >
-              <FiSave className="w-5 h-5" />
-              Save Session
-            </button>
+            {/* REMOVED: Save Session button was here */}
           </div>
         </div>
       </div>
