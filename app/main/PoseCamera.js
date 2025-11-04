@@ -842,39 +842,39 @@ export default function PoseCamera({ poseLandmarker }) {
       className="flex flex-col items-center justify-center p-4 min-h-screen font-sans"
       style={{ background: "var(--background)", color: "var(--foreground)" }}
     >
-      <header className="mb-8 max-w-lg w-full">
-        <div className="flex items-center justify-center relative">
-          <button
-            onClick={goBack}
-            title="Go back"
-            className="absolute left-0 top-1 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 shadow-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Back
-          </button>
-          <h1 className="text-4xl font-extrabold text-center text-indigo-600 flex items-center  justify-center">
-            Posture Analyzer
-          </h1>
-        </div>
-        <p className="text-gray-500 text-center text-base mt-1">
-          Real-time tracking for shoulders, head, and slouching/leaning.
-        </p>
-      </header>
-
+     <header className="mb-8 max-w-lg w-full">
+  <div className="flex items-center relative">
+    <button
+      onClick={goBack}
+      title="Go back"
+      className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 shadow-sm"
+      // Changed top-1 to top-1/2 for better vertical centering
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+      Back
+    </button>
+    <h1 className="text-4xl font-extrabold text-center text-indigo-600 w-full">
+      Posture Analyzer
+    </h1>
+  </div>
+  <p className="text-gray-500 text-center text-base mt-1">
+    Real-time tracking for shoulders, head, and slouching/leaning.
+  </p>
+</header>
       <div className="relative w-full max-w-lg  shadow-xl rounded-xl overflow-hidden mb-8 border-4 border-gray-200 bg-white">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
