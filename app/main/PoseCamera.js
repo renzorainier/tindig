@@ -842,7 +842,7 @@ export default function PoseCamera({ poseLandmarker }) {
       className="flex flex-col items-center justify-center p-4 min-h-screen font-sans"
       style={{ background: "var(--background)", color: "var(--foreground)" }}
     >
-     <header className="mb-8 max-w-lg w-full">
+<header className="mb-8 max-w-lg w-full">
   <div className="flex items-center relative">
     <button
       onClick={goBack}
@@ -867,7 +867,9 @@ export default function PoseCamera({ poseLandmarker }) {
       </svg>
       Back
     </button>
-    <h1 className="text-4xl font-extrabold text-center text-indigo-600 w-full">
+    <h1
+      className="text-4xl font-extrabold text-center text-indigo-600 w-full pt-2"
+    >
       Posture Analyzer
     </h1>
   </div>
