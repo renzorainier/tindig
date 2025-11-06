@@ -199,3 +199,42 @@ button.btn-primary, .btn-logout, .google-signin-btn { border-radius: 12px; }
 .animate-fadeIn {
   animation: fadeIn 0.6s ease-out forwards;
 }
+
+/* Responsive typography: keep mobile sizes, scale up on larger screens */
+@media (min-width: 640px) {
+  /* Slightly larger root size so Tailwind rem-based utilities scale */
+  html { font-size: 17px; }
+
+  /* Paragraphs a bit larger on tablets */
+  .paragraph { font-size: 12px; }
+
+  /* Brand/hero title scale */
+  .tindig { font-size: 2.25rem; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop root size */
+  html { font-size: 18px; }
+
+  /* Paragraphs larger for readability on wide viewports */
+  .paragraph { font-size: 14px; }
+
+  /* Larger brand title on desktop */
+  .tindig { font-size: 2.5rem; }
+}
+
+/* Responsive image sizing: keep mobile as-is, reduce max-width on larger screens */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  img { max-width: 85%; }
+}
+
+@media (min-width: 1024px) {
+  img { max-width: 70%; }
+}
